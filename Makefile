@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := defaultBuild
-CC=g++
+CC=gcc
 CFLAGS=
 SRC_DIR=src
 OUT_DIR=build
@@ -17,13 +17,13 @@ define create_dir
 	$(if ($(OS),Windows_NT), $(call win_mkdir,$(1)), mkdir -p $(1))
 endef
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 # $(call create_dir,$(@D))
-	$(CC) --std=c++11 -c $^ -o $@ $(CFLAGS)
+	$(CC) --std=c11 -c $^ -o $@ $(CFLAGS)
 
-$(SHARE_OBJ)/%.o: $(SRC_DIR)/%.cpp
+$(SHARE_OBJ)/%.o: $(SRC_DIR)/%.c
 # $(call create_dir,$(@D))
-	$(CC) --std=c++11 -c -fPIC $^ -o $@ $(CFLAGS)
+	$(CC) --std=c11 -c -fPIC $^ -o $@ $(CFLAGS)
 
 build_dir:
 ifeq ($(OS),Windows_NT)

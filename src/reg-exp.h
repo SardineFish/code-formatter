@@ -1,19 +1,9 @@
 #pragma once
-#include <string>
+typedef int Boolean;
 
-using namespace std;
-
-class RegExp;
-class RegExpMatchResult;
-
-class RegExp
+typedef struct 
 {
-  public:
-    RegExp(string pattern);
-    RegExpMatchResult match(string input);
-    bool test(string input);
-};
+    Boolean (*test)(const char* string);
+} RegExpType;
 
-class RegExpMathResult
-{
-};
+RegExpType* regExp(const char* pattern);
