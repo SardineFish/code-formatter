@@ -1,16 +1,18 @@
 #include "reg-exp-parser.h"
+#include "error.h"
 #include <memory.h>
 #include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 
-enum
-{
-    ERROR_UNEXPECT_TOKEN = -1,
-};
+#define ERROR_UNEXPECT_TOKEN "Unexpect token."
 
 RegExpNode* cloneNode(RegExpNode* origin);
 RegExpNode* cloneNodeWithouNext(RegExpNode* origin);
-int parseGroup(const char* pattern, int idx, int length, RegExpNode* header);
 
+int parsePattern(const char* pattern, int idx, int length, RegExpNode* header);
+int parseGroup(const char* pattern, int idx, int length, RegExpNode* header);
+int parseSelectable(const char* pattern, int idx, int length, RegExpNode* header);
 
 RegExpNode* createRegExpNode(RegExpNodeType type, char chr)
 {
@@ -20,16 +22,52 @@ RegExpNode* createRegExpNode(RegExpNodeType type, char chr)
     node->next = NULL;
     node->optional = FALSE;
     node->repeat = FALSE;
+    node->selectable = FALSE;
     node->type = type;
     return node;
 }
 
-RegExpNode* parse(const char* pattern)
+void testAST(const RegExpNode* node)
 {
-    
+    if(!node)
+        return;
+    switch(node->type)
+    {
+        case REGEXP_GROUP:
+            putchar('(');
+            break;
+        case REGEXP_CHAR:
+            putchar(node->chr);
+            break;
+    }
+    if(node->optional)
+    {
+        if(node->repeat)
+            putchar('*');
+        else
+            putchar('?');
+    }
+    testAST(node->header);
+    if (node->selectable && node->next)
+        putchar('|');
+    if (node->type == REGEXP_GROUP)
+        putchar(')');
+    testAST(node->next);
 }
 
-int getPattern(const char* pattern, int idx, int length, RegExpNode* header)
+RegExpNode* parse(const char* pattern)
+{
+    RegExpNode* header = createRegExpNode(REGEXP_GROUP, 0);
+    int idx = parsePattern(pattern, 0, strlen(pattern), header);
+    if(idx!=strlen(pattern) - 1)
+        throwError("Parse regexp failed: " ERROR_UNEXPECT_TOKEN);
+    header->header = header->next;
+    header->next = NULL;
+    testAST(header);
+    return header;
+}
+
+int parsePattern(const char* pattern, int idx, int length, RegExpNode* header)
 {
     RegExpNode* p = header;
     for (idx; idx < length; idx++)
@@ -43,59 +81,104 @@ int getPattern(const char* pattern, int idx, int length, RegExpNode* header)
         else if (chr == '(')
         {
             node = createRegExpNode(REGEXP_GROUP, 0);
-            idx = getPattern(pattern, idx, length, node);
+            idx = parseGroup(pattern, idx, length, node);
         }
+        else
+        {
+            return idx - 1;
+        }
+        
 
         idx++;
         switch (pattern[idx])
         {
-            case '*':
-            {
-                node->repeat = TRUE;
-                node->optional = TRUE;
-                break;
-            }
-            case '+':
-            {
-                RegExpNode* wrapper = createRegExpNode(REGEXP_GROUP, 0);
-                wrapper->header = node;
-                node->next = cloneNode(node);
-                node->next->repeat = TRUE;
-                node->next->optional = TRUE;
-                node = wrapper;
-                break;
-            }
-            default:
-                idx--;
-                break;
+        case '*':
+        {
+            node->repeat = TRUE;
+            node->optional = TRUE;
+            break;
+        }
+        case '+':
+        {
+            RegExpNode* wrapper = createRegExpNode(REGEXP_GROUP, 0);
+            wrapper->header = node;
+            node->next = cloneNode(node);
+            node->next->repeat = TRUE;
+            node->next->optional = TRUE;
+            node = wrapper;
+            break;
+        }
+        case '?':
+        {
+            node->optional = TRUE;
+            node->repeat = FALSE;
+            break;
+        }
+        default:
+            idx--;
+            break;
         }
 
-        /*idx++;
+        p->next = node;
+        p = p->next;
+
+        idx++;
         switch (pattern[idx])
         {
-            case:
-                
-                break;
-        
-            default:
-                break;
-        }*/
+        case '|':
+            idx = parseSelectable(pattern, idx, length, header);
+            break;
+        default:
+            idx--;
+            break;
+        }
     }
+    return length - 1;
 }
 
-int getGroup(const char* pattern, int idx, int length, RegExpNode* header)
+int parseSelectable(const char* pattern, int idx, int length, RegExpNode* header)
 {
-    if(pattern[idx] != '(')
-        return ERROR_UNEXPECT_TOKEN;
-    idx = getPattern(pattern, idx, length, header);
+    if (pattern[idx] != '|')
+        throwError("Parse regexp failed: " ERROR_UNEXPECT_TOKEN);
+    RegExpNode* wrapper = header;
+    if(header->type == REGEXP_GROUP)
+    {
+        wrapper = createRegExpNode(REGEXP_SELECTABLE, 0);
+        wrapper->header = header->next;
+        header->next = wrapper;
+    }
+    else
+    {
+        wrapper->header = header->next;
+        header->next = NULL;
+    }
+    wrapper->selectable = TRUE;
+    wrapper->next = createRegExpNode(REGEXP_SELECTABLE, 0);
+    idx = parsePattern(pattern, idx + 1, length, wrapper->next);
+    if (!wrapper->next->selectable)
+    {
+        wrapper->next->header = wrapper->next->next;
+        wrapper->next->next = NULL;
+        wrapper->next->selectable = TRUE;
+    }
+    return idx;
+}
+
+int parseGroup(const char* pattern, int idx, int length, RegExpNode* header)
+{
+    if (pattern[idx] != '(')
+        throwError("Parse regexp failed: " ERROR_UNEXPECT_TOKEN);
+    idx = parsePattern(pattern, idx + 1, length, header);
+    header->header = header->next;
+    header->next = NULL;
     if (pattern[++idx] != ')')
-        return ERROR_UNEXPECT_TOKEN;
+        throwError("Parse regexp failed: " ERROR_UNEXPECT_TOKEN);
     return idx;
 }
 
 RegExpNode* cloneNodeWithouNext(RegExpNode* origin)
 {
-    if(!origin)
+    if (!origin)
         return NULL;
     RegExpNode* node = createRegExpNode(origin->type, origin->chr);
     node->header = cloneNode(origin->header);
@@ -106,7 +189,7 @@ RegExpNode* cloneNodeWithouNext(RegExpNode* origin)
 
 RegExpNode* cloneNode(RegExpNode* origin)
 {
-    if(!origin)
+    if (!origin)
         return NULL;
     RegExpNode* node = createRegExpNode(origin->type, origin->chr);
     node->header = cloneNode(origin->header);

@@ -54,5 +54,5 @@ all: build_dir build_all
 debug: 
 	make build_all CFLAGS=-g
 
-$(LIB_DIR)/libreg-exp.a: $(SHARE_OBJ)/reg-exp-parser.o $(SHARE_OBJ)/reg-exp.o
+$(LIB_DIR)/libreg-exp.a: $(SHARE_OBJ)/reg-exp-parser.o $(SHARE_OBJ)/reg-exp.o $(SHARE_OBJ)/error.o
 	ar rcs $@ $^

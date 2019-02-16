@@ -5,7 +5,7 @@ enum
 {
     REGEXP_CHAR = 1,
     REGEXP_GROUP = 2,
-    REGEXP_OPTIONAL = 3,
+    REGEXP_SELECTABLE = 4,
 };
 enum
 {
@@ -23,6 +23,7 @@ struct RegExpNodeType
     char chr;
     Boolean optional;
     Boolean repeat;
+    Boolean selectable;
     RegExpNode* header;
     RegExpNode* next;
 };
