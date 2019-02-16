@@ -1,5 +1,10 @@
 #pragma once
 #include "reg-exp.h"
+#include "link-list.h"
+
+#define DEBUG
+
+#define EMPTY_CHAR 0
 
 enum
 {
@@ -29,6 +34,20 @@ struct RegExpNodeType
     RegExpNode* header;
     RegExpNode* next;
 };
-//typedef struct RegExpNodeType RegExpNode;
+
+typedef struct RegExpNFANodeType RegExpNFANode;
+typedef struct RegExpNFAEdgeType RegExpNFAEdge;
+struct RegExpNFANodeType
+{
+    int id;
+    LinkList* edges;
+};
+struct RegExpNFAEdgeType
+{
+    char chr;
+    RegExpNFANode* prior;
+    RegExpNFANode* next;
+};
 
 RegExpNode* parse(const char* pattern);
+void compile(const RegExpNode* ast);

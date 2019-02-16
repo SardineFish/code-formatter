@@ -27,7 +27,7 @@ RegExpNode* createRegExpNode(RegExpNodeType type, char chr)
     node->type = type;
     return node;
 }
-
+#ifdef DEBUG
 void testAST(const RegExpNode* node)
 {
     if(!node)
@@ -65,6 +65,7 @@ void testAST(const RegExpNode* node)
         putchar(')');
     testAST(node->next);
 }
+#endif
 
 RegExpNode* parse(const char* pattern)
 {
@@ -74,7 +75,11 @@ RegExpNode* parse(const char* pattern)
         throwError("Parse regexp failed: " ERROR_UNEXPECT_TOKEN);
     header->header = header->next;
     header->next = NULL;
+#ifdef DEBUG
+    printf("Parsed: ");
     testAST(header);
+    printf("\n");
+#endif
     return header;
 }
 

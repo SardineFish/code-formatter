@@ -5,6 +5,10 @@
 
 int main()
 {
-    regExp("[_A-Z0-9]+ab(df*|g+(h?))");
+    system("chcp 65001");
+    char regexp[1024];
+    printf("RegExp> ");
+    scanf("%s", regexp);
+    regExp(regexp);
     return 0;
 }
