@@ -12,11 +12,12 @@ RegExpNode* cloneNodeWithouNext(RegExpNode* origin);
 
 int parsePattern(const char* pattern, int idx, int length, RegExpNode* header);
 int parseGroup(const char* pattern, int idx, int length, RegExpNode* header);
+int parseCharSet(const char* pattern, int idx, int length, RegExpNode* header);
 int parseSelectable(const char* pattern, int idx, int length, RegExpNode* header);
 
 RegExpNode* createRegExpNode(RegExpNodeType type, char chr)
 {
-    RegExpNode* node = (RegExpNode*)malloc(sizeof(RegExpNode));
+    RegExpNode* node = (RegExpNode*)calloc(1, sizeof(RegExpNode));
     node->chr = chr;
     node->header = NULL;
     node->next = NULL;
@@ -39,7 +40,17 @@ void testAST(const RegExpNode* node)
         case REGEXP_CHAR:
             putchar(node->chr);
             break;
+        case REGEXP_CHAR_SET:
+        {
+            putchar('[');
+            for (int i = 0; i < 256;i++)
+                if(node->charSet[i])
+                    putchar(i);
+            putchar(']');
+            break;
+        }
     }
+
     if(node->optional)
     {
         if(node->repeat)
@@ -82,6 +93,11 @@ int parsePattern(const char* pattern, int idx, int length, RegExpNode* header)
         {
             node = createRegExpNode(REGEXP_GROUP, 0);
             idx = parseGroup(pattern, idx, length, node);
+        }
+        else if (chr == '[')
+        {
+            node = createRegExpNode(REGEXP_CHAR_SET, 0);
+            idx = parseCharSet(pattern, idx, length, node);
         }
         else
         {
@@ -168,10 +184,49 @@ int parseGroup(const char* pattern, int idx, int length, RegExpNode* header)
 {
     if (pattern[idx] != '(')
         throwError("Parse regexp failed: " ERROR_UNEXPECT_TOKEN);
+
     idx = parsePattern(pattern, idx + 1, length, header);
     header->header = header->next;
     header->next = NULL;
+
     if (pattern[++idx] != ')')
+        throwError("Parse regexp failed: " ERROR_UNEXPECT_TOKEN);
+    return idx;
+}
+
+int parseCharSet(const char* pattern, int idx, int length, RegExpNode* header)
+{
+    if (pattern[idx++] != '[')
+        throwError("Parse regexp failed: " ERROR_UNEXPECT_TOKEN);
+
+    int negated = FALSE;
+    if(pattern[idx]=='^')
+    {
+        negated = TRUE;
+        idx++;
+    }
+    for (idx; idx < length;idx++)
+    {
+        char chr = pattern[idx];
+        if(chr == ']')
+            break;
+        header->charSet[chr] = 1;
+        if(pattern[idx+1]=='-')
+        {
+            for (char i = chr; i <= pattern[idx + 2];i++)
+            {
+                header->charSet[i] = 1;
+            }
+            idx += 2;
+        }
+    }
+    if(negated)
+    {
+        for (int i = 0; i < 256;i++)
+            header->charSet[i] = !(header->charSet[i]);
+    }
+
+    if (pattern[idx] != ']')
         throwError("Parse regexp failed: " ERROR_UNEXPECT_TOKEN);
     return idx;
 }
@@ -195,6 +250,7 @@ RegExpNode* cloneNode(RegExpNode* origin)
     node->header = cloneNode(origin->header);
     node->optional = origin->optional;
     node->repeat = origin->repeat;
+    memcpy(node->charSet, origin->charSet, 256);
     for (RegExpNode* p = node; origin->next; p = p->next, origin = origin->next)
     {
         p->next = cloneNodeWithouNext(origin->next);

@@ -5,6 +5,6 @@
 
 int main()
 {
-    regExp("ab(df*|g+(h?))");
+    regExp("[_A-Z0-9]+ab(df*|g+(h?))");
     return 0;
 }
