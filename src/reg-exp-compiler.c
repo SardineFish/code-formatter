@@ -11,6 +11,7 @@ RegExpNFANode* createNFANode()
 {
     RegExpNFANode* node = (RegExpNFANode*)malloc(sizeof(RegExpNFANode));
     node->edges = createLinkList();
+    node->edgesIn = createLinkList();
     node->id = -1;
     return node;
 }
@@ -21,19 +22,74 @@ RegExpNFAEdge* createNFAEdge(char chrLow, char chrHigh, RegExpNFANode* prior, Re
     edge->chrHigh = chrHigh;
     edge->next = next;
     edge->prior = prior;
+    if(next)
+        listAdd(next->edgesIn, edge);
     return edge;
 }
 
-int identifyNFAStates(RegExpNFANode* node, int id, LinkList* edgeSet)
+void collapseNFANode(RegExpNFANode* dst, RegExpNFANode* src, RegExpNFAEdge* edge)
+{
+    listRemove(dst->edges, edge);
+    for (ListNode* p=src->edgesIn->header; p;p=p->next)
+    {
+        RegExpNFAEdge* edge = p->element;
+        edge->next = dst;
+    }
+    for (ListNode* p = src->edges->header; p; p = p->next)
+    {
+        RegExpNFAEdge* edge = p->element;
+        edge->prior = dst;
+    }
+    listCat(dst->edges, src->edges);
+    free(src->edges);
+    free(src->edgesIn);
+    free(src);
+    free(edge);
+}
+
+void collapseNFA(RegExpNFANode* node)
+{
+    if(node->id==-2)
+        return;
+    node->id = -2;
+    for (ListNode* p = node->edges->header; p;p=p->next)
+    {
+        RegExpNFAEdge* edge;
+    Next:
+        if(!p)
+            break;
+        edge = (RegExpNFAEdge*)p->element;
+        if(edge->chrLow==EMPTY_CHAR)
+        {
+            p = p->next;
+            if(node == edge->next)
+            {
+                listRemove(node->edges, edge);
+            }
+            else
+                collapseNFANode(node, edge->next, edge);
+            goto Next;
+        }
+    }
+
+    for (ListNode* p = node->edges->header; p; p = p->next)
+    {
+        RegExpNFAEdge* edge = p->element;
+        collapseNFA(edge->next);
+    }
+}
+
+int identifyNFAStates(RegExpNFANode* node, int id, LinkList* edgeSet, LinkList* nodeSet)
 {
     if(node->id >= 0)
-        return id;
+        return id-1;
     node->id = id;
+    nodeSet->add(nodeSet, node);
     for (ListNode* p = node->edges->header; p;p=p->next)
     {
         RegExpNFAEdge* edge = ((RegExpNFAEdge*)p->element);
         edgeSet->add(edgeSet, edge);
-        id = identifyNFAStates(edge->next, id + 1, edgeSet);
+        id = identifyNFAStates(edge->next, id + 1, edgeSet, nodeSet);
     }
     return id;
 }
@@ -70,20 +126,24 @@ void printNFA(LinkList* edgeSet)
 #endif
 
 
-RegExpNFANode* compileToNFA(const RegExpNode* root)
+RegExp* compile(const RegExpNode* root)
 {
+    // Compile to NFA
     RegExpNFANode* initialState = createNFANode();
     RegExpNFANode* finalState = compileSequence(root->header, initialState);
+    // collapseNFA(initialState);
     LinkList* edgeSet = createLinkList();
-    identifyNFAStates(initialState, 0, edgeSet);
+    LinkList* nodeSet = createLinkList();
+    identifyNFAStates(initialState, 0, edgeSet, nodeSet);
 #ifdef DEBUG
     printNFA(edgeSet);
 #endif
-}
 
-void compile(const RegExpNode* root)
-{
-    RegExpNFANode* rootNFA = compileToNFA(root);
+    RegExp* regexp = (RegExp*)malloc(sizeof(RegExp));
+    regexp->NFA = initialState;
+    regexp->finalState = finalState;
+    regexp->totalStates = nodeSet->length;
+    return regexp;
 }
 
 RegExpNFANode* compileSequence(RegExpNode* header, RegExpNFANode* headerState)

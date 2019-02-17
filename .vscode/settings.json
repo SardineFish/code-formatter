@@ -3,6 +3,7 @@
         "stdexcept": "cpp",
         "xstring": "cpp",
         "reg-exp.h": "c",
-        "reg-exp-parser.h": "c"
+        "reg-exp-parser.h": "c",
+        "link-list.h": "c"
     }
 }

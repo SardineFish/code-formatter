@@ -1,9 +1,34 @@
 #pragma once
+
+typedef struct RegExpNFANodeType RegExpNFANode;
+typedef struct RegExpNFAEdgeType RegExpNFAEdge;
+typedef struct RegExpType RegExp;
+
+#include "reg-exp-parser.h"
+#include "data-struct.h"
+#include "reg-exp-matcher.h"
 typedef int Boolean;
-
-typedef struct 
+struct RegExpNFANodeType
 {
-    Boolean (*test)(const char* string);
-} RegExpType;
+    int id;
+    LinkList* edges;
+    LinkList* edgesIn;
+};
+struct RegExpNFAEdgeType
+{
+    char chrLow;
+    char chrHigh;
+    RegExpNFANode* prior;
+    RegExpNFANode* next;
+};
 
-RegExpType* regExp(const char* pattern);
+
+struct RegExpType 
+{
+    RegExpNFANode* NFA;
+    int totalStates;
+    RegExpNFANode* finalState;
+    Boolean (*test)(const char* string);
+};
+
+RegExp* regExp(const char* pattern);

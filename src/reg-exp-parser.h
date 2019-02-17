@@ -1,8 +1,13 @@
 #pragma once
-#include "reg-exp.h"
-#include "link-list.h"
 
-#define DEBUG
+typedef int RegExpNodeType;
+typedef int Boolean;
+typedef struct RegExpNodeType RegExpNode;
+
+#include "reg-exp.h"
+#include "data-struct.h"
+
+//#define DEBUG
 
 #define EMPTY_CHAR 0
 
@@ -19,10 +24,6 @@ enum
     FALSE = 0
 };
 
-typedef int RegExpNodeType;
-typedef int Boolean;
-typedef struct RegExpNodeType RegExpNode;
-
 struct RegExpNodeType
 {
     RegExpNodeType type;
@@ -36,20 +37,5 @@ struct RegExpNodeType
     RegExpNode* next;
 };
 
-typedef struct RegExpNFANodeType RegExpNFANode;
-typedef struct RegExpNFAEdgeType RegExpNFAEdge;
-struct RegExpNFANodeType
-{
-    int id;
-    LinkList* edges;
-};
-struct RegExpNFAEdgeType
-{
-    char chrLow;
-    char chrHigh;
-    RegExpNFANode* prior;
-    RegExpNFANode* next;
-};
-
 RegExpNode* parse(const char* pattern);
-void compile(const RegExpNode* ast);
+RegExp* compile(const RegExpNode* ast);

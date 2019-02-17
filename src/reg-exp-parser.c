@@ -57,6 +57,11 @@ void testAST(const RegExpNode* node)
             : printf("%c", node->charFrom);
         break;
     }
+    testAST(node->header);
+    if (node->selectable && node->next)
+        putchar('|');
+    if (node->type == REGEXP_GROUP)
+        putchar(')');
 
     if (node->optional)
     {
@@ -65,11 +70,6 @@ void testAST(const RegExpNode* node)
         else
             putchar('?');
     }
-    testAST(node->header);
-    if (node->selectable && node->next)
-        putchar('|');
-    if (node->type == REGEXP_GROUP)
-        putchar(')');
     testAST(node->next);
 }
 #endif
@@ -349,7 +349,10 @@ RegExpNode* cloneNodeWithouNext(RegExpNode* origin)
     RegExpNode* node = createRegExpNode(origin->type, origin->chr);
     node->header = cloneNode(origin->header);
     node->optional = origin->optional;
+    node->selectable = origin->selectable;
     node->repeat = origin->repeat;
+    node->charFrom = origin->charFrom;
+    node->charTo = origin->charTo;
     return node;
 }
 
@@ -360,6 +363,7 @@ RegExpNode* cloneNode(RegExpNode* origin)
     RegExpNode* node = createRegExpNode(origin->type, origin->chr);
     node->header = cloneNode(origin->header);
     node->optional = origin->optional;
+    node->selectable = origin->selectable;
     node->repeat = origin->repeat;
     node->charFrom = origin->charFrom;
     node->charTo = origin->charTo;
