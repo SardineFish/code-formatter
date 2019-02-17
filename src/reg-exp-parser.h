@@ -27,7 +27,8 @@ struct RegExpNodeType
 {
     RegExpNodeType type;
     char chr;
-    char charSet[256];
+    char charFrom;
+    char charTo;
     Boolean optional;
     Boolean repeat;
     Boolean selectable;
@@ -44,7 +45,8 @@ struct RegExpNFANodeType
 };
 struct RegExpNFAEdgeType
 {
-    char chr;
+    char chrLow;
+    char chrHigh;
     RegExpNFANode* prior;
     RegExpNFANode* next;
 };

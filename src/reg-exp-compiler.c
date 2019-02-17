@@ -14,10 +14,11 @@ RegExpNFANode* createNFANode()
     node->id = -1;
     return node;
 }
-RegExpNFAEdge* createNFAEdge(char chr, RegExpNFANode* prior, RegExpNFANode* next)
+RegExpNFAEdge* createNFAEdge(char chrLow, char chrHigh, RegExpNFANode* prior, RegExpNFANode* next)
 {
     RegExpNFAEdge* edge = (RegExpNFAEdge*)malloc(sizeof(RegExpNFAEdge));
-    edge->chr = chr;
+    edge->chrLow = chrLow;
+    edge->chrHigh = chrHigh;
     edge->next = next;
     edge->prior = prior;
     return edge;
@@ -51,12 +52,14 @@ void printNFA(LinkList* edgeSet)
     for (ListNode* p = edgeSet->header; p; p = p->next)
     {
         RegExpNFAEdge* edge = ((RegExpNFAEdge*)p->element);
-        if (edge->chr == EMPTY_CHAR)
+        if (edge->chrLow == EMPTY_CHAR)
         {
-            sprintf(subStr, "Labeled[%d->%d,\"ε\"],", edge->prior->id, edge->next->id, edge->chr);
+            sprintf(subStr, "Labeled[%d->%d,\"ε\"],", edge->prior->id, edge->next->id);
         }
+        else if(edge->chrHigh - edge->chrLow>0)
+            sprintf(subStr, "Labeled[%d->%d,\"[%c-%c]\"],", edge->prior->id, edge->next->id, edge->chrLow, edge->chrHigh);
         else
-            sprintf(subStr, "Labeled[%d->%d,\"%c\"],", edge->prior->id, edge->next->id, edge->chr);
+            sprintf(subStr, "Labeled[%d->%d,\"%c\"],", edge->prior->id, edge->next->id, edge->chrLow);
         strcat(str, subStr);
     }
     strcat(str, "\b}, VertexLabels -> \"Name\"]");
@@ -90,10 +93,10 @@ RegExpNFANode* compileSequence(RegExpNode* header, RegExpNFANode* headerState)
     {
         RegExpNFANode* initialState = tailState;
         RegExpNFANode* finalState = tailState;
-        if (p->type == REGEXP_CHAR)
+        if (p->type == REGEXP_CHAR || p->type == REGEXP_CHAR_SET)
         {
             finalState = createNFANode();
-            RegExpNFAEdge* edge = createNFAEdge(p->chr, initialState, finalState);
+            RegExpNFAEdge* edge = createNFAEdge(p->charFrom, p->charTo, initialState, finalState);
             initialState->edges->add(initialState->edges, edge);
         }
         else if (p->type == REGEXP_GROUP)
@@ -108,11 +111,11 @@ RegExpNFANode* compileSequence(RegExpNode* header, RegExpNFANode* headerState)
         if(p->optional)
         {
             // Create empty edge to skip these sequence.
-            initialState->edges->add(initialState->edges, createNFAEdge(EMPTY_CHAR, initialState, finalState));
+            initialState->edges->add(initialState->edges, createNFAEdge(EMPTY_CHAR, EMPTY_CHAR, initialState, finalState));
             if(p->repeat)
             {
                 // Return to the initial state to repeat these sequence.
-                finalState->edges->add(finalState->edges, createNFAEdge(EMPTY_CHAR, finalState, initialState));
+                finalState->edges->add(finalState->edges, createNFAEdge(EMPTY_CHAR, EMPTY_CHAR, finalState, initialState));
             }
         }
 
@@ -144,8 +147,8 @@ RegExpNFANode* compileSelectable(RegExpNode* node, RegExpNFANode* header)
         // Final state of sub reg-exp
         RegExpNFANode* finalState = compileSequence(p->header, initialState);
         // Combine the sub reg-exp with other combination;
-        header->edges->add(header->edges, createNFAEdge(EMPTY_CHAR, header, initialState));
-        finalState->edges->add(finalState->edges, createNFAEdge(EMPTY_CHAR, finalState, tail));
+        header->edges->add(header->edges, createNFAEdge(EMPTY_CHAR, EMPTY_CHAR, header, initialState));
+        finalState->edges->add(finalState->edges, createNFAEdge(EMPTY_CHAR, EMPTY_CHAR, finalState, tail));
     }
     return tail;
 }

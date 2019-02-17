@@ -1,9 +1,9 @@
 #include "reg-exp-parser.h"
 #include "error.h"
 #include <memory.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
 #define ERROR_UNEXPECT_TOKEN "Unexpect token."
 
@@ -14,11 +14,14 @@ int parsePattern(const char* pattern, int idx, int length, RegExpNode* header);
 int parseGroup(const char* pattern, int idx, int length, RegExpNode* header);
 int parseCharSet(const char* pattern, int idx, int length, RegExpNode* header);
 int parseSelectable(const char* pattern, int idx, int length, RegExpNode* header);
+int parseEscapeChar(const char* pattern, int idx, int length, RegExpNode* header);
 
 RegExpNode* createRegExpNode(RegExpNodeType type, char chr)
 {
     RegExpNode* node = (RegExpNode*)calloc(1, sizeof(RegExpNode));
     node->chr = chr;
+    node->charFrom = chr;
+    node->charTo = chr;
     node->header = NULL;
     node->next = NULL;
     node->optional = FALSE;
@@ -27,33 +30,37 @@ RegExpNode* createRegExpNode(RegExpNodeType type, char chr)
     node->type = type;
     return node;
 }
+
+void errorUnexpectChar(char chr, int pos)
+{
+    char msg[1024];
+    sprintf(msg, "Syntax Error: Invalid regular expression: Unexpect token '%c' at 1:%d", chr, pos);
+    throwError(msg);
+}
+
 #ifdef DEBUG
 void testAST(const RegExpNode* node)
 {
-    if(!node)
+    if (!node)
         return;
-    switch(node->type)
+    switch (node->type)
     {
-        case REGEXP_GROUP:
-            putchar('(');
-            break;
-        case REGEXP_CHAR:
-            putchar(node->chr);
-            break;
-        case REGEXP_CHAR_SET:
-        {
-            putchar('[');
-            for (int i = 0; i < 256;i++)
-                if(node->charSet[i])
-                    putchar(i);
-            putchar(']');
-            break;
-        }
+    case REGEXP_GROUP:
+        putchar('(');
+        break;
+    case REGEXP_CHAR:
+        putchar(node->chr);
+        break;
+    case REGEXP_CHAR_SET:
+        node->charTo - node->charFrom > 0 
+            ? printf("[%c-%c]", node->charFrom, node->charTo)
+            : printf("%c", node->charFrom);
+        break;
     }
 
-    if(node->optional)
+    if (node->optional)
     {
-        if(node->repeat)
+        if (node->repeat)
             putchar('*');
         else
             putchar('?');
@@ -71,7 +78,7 @@ RegExpNode* parse(const char* pattern)
 {
     RegExpNode* header = createRegExpNode(REGEXP_GROUP, 0);
     int idx = parsePattern(pattern, 0, strlen(pattern), header);
-    if(idx!=strlen(pattern) - 1)
+    if (idx != strlen(pattern) - 1)
         throwError("Parse regexp failed: " ERROR_UNEXPECT_TOKEN);
     header->header = header->next;
     header->next = NULL;
@@ -82,7 +89,7 @@ RegExpNode* parse(const char* pattern)
 #endif
     return header;
 }
-
+char NormalCharSet[] = "!\"#%&'";
 int parsePattern(const char* pattern, int idx, int length, RegExpNode* header)
 {
     RegExpNode* p = header;
@@ -90,25 +97,37 @@ int parsePattern(const char* pattern, int idx, int length, RegExpNode* header)
     {
         char chr = pattern[idx];
         RegExpNode* node;
-        if (('A' <= chr && chr <= 'Z') || ('a' <= chr && chr <= 'z') || ('0' <= chr && chr <= '9'))
+        switch(chr)
         {
-            node = createRegExpNode(REGEXP_CHAR, chr);
+            case '(':
+                node = createRegExpNode(REGEXP_GROUP, 0);
+                idx = parseGroup(pattern, idx, length, node);
+                break;
+            case '[':
+                node = createRegExpNode(REGEXP_CHAR_SET, 0);
+                idx = parseCharSet(pattern, idx, length, node);
+                break;
+            case '\\':
+                node = createRegExpNode(REGEXP_CHAR_SET, 0);
+                idx = parseEscapeChar(pattern, idx, length, node);
+                break;
+            case '.':
+                node = createRegExpNode(REGEXP_CHAR_SET, 0);
+                parseCharSet("[^\r\n]", 0, 5, node);
+                break;
+            case ')':
+            case ']':
+            case '?':
+            case '+':
+            case '*':
+            case '^':
+            case '$':
+                return idx - 1;
+                break;
+            default:
+                node = createRegExpNode(REGEXP_CHAR, chr);
+                break;
         }
-        else if (chr == '(')
-        {
-            node = createRegExpNode(REGEXP_GROUP, 0);
-            idx = parseGroup(pattern, idx, length, node);
-        }
-        else if (chr == '[')
-        {
-            node = createRegExpNode(REGEXP_CHAR_SET, 0);
-            idx = parseCharSet(pattern, idx, length, node);
-        }
-        else
-        {
-            return idx - 1;
-        }
-        
 
         idx++;
         switch (pattern[idx])
@@ -162,7 +181,7 @@ int parseSelectable(const char* pattern, int idx, int length, RegExpNode* header
     if (pattern[idx] != '|')
         throwError("Parse regexp failed: " ERROR_UNEXPECT_TOKEN);
     RegExpNode* wrapper = header;
-    if(header->type == REGEXP_GROUP)
+    if (header->type == REGEXP_GROUP)
     {
         wrapper = createRegExpNode(REGEXP_SELECTABLE, 0);
         wrapper->header = header->next;
@@ -204,35 +223,122 @@ int parseCharSet(const char* pattern, int idx, int length, RegExpNode* header)
     if (pattern[idx++] != '[')
         throwError("Parse regexp failed: " ERROR_UNEXPECT_TOKEN);
 
+    char* charSet = (char*)calloc(256, sizeof(char));
     int negated = FALSE;
-    if(pattern[idx]=='^')
+    if (pattern[idx] == '^')
     {
         negated = TRUE;
         idx++;
     }
-    for (idx; idx < length;idx++)
+    for (idx; idx < length; idx++)
     {
         char chr = pattern[idx];
-        if(chr == ']')
+        if (chr == ']')
             break;
-        header->charSet[chr] = 1;
-        if(pattern[idx+1]=='-')
+        charSet[chr] = 1;
+        if (pattern[idx + 1] == '-')
         {
-            for (char i = chr; i <= pattern[idx + 2];i++)
+            for (char i = chr; i <= pattern[idx + 2]; i++)
             {
-                header->charSet[i] = 1;
+                charSet[i] = 1;
             }
             idx += 2;
         }
     }
-    if(negated)
+    if (negated)
     {
-        for (int i = 0; i < 256;i++)
-            header->charSet[i] = !(header->charSet[i]);
+        for (int i = 1; i < 256; i++)
+            charSet[i] = !charSet[i];
+    }
+
+    LinkList* list = createLinkList();
+    for (int i = 1; i < 256;i++)
+    {
+        if(charSet[i])
+        {
+            char from = i;
+            char to = i;
+            for (; i < 256 && charSet[i];i++)
+                to = i;
+            i--;
+            RegExpNode* setNode = createRegExpNode(REGEXP_CHAR_SET, from);
+            setNode->charTo = to;
+            list->add(list, setNode);
+        }
+    }
+    if(list->length>1)
+    {
+        header->type = REGEXP_GROUP;
+        RegExpNode* node = header;
+        for (ListNode* p = list->header; p; p = p->next)
+        {
+            node->next = createRegExpNode(REGEXP_SELECTABLE, 0);
+            node->next->selectable = TRUE;
+            node->next->header = (RegExpNode*)p->element;
+            node = node->next;
+        }
+        header->header = header->next;
+        header->next = NULL;
+    }
+    else{
+        header->type = REGEXP_CHAR_SET;
+        header->charFrom = ((RegExpNode*)list->header->element)->charFrom;
+        header->charTo = ((RegExpNode*)list->header->element)->charTo;
     }
 
     if (pattern[idx] != ']')
         throwError("Parse regexp failed: " ERROR_UNEXPECT_TOKEN);
+    return idx;
+}
+
+int parseEscapeChar(const char* pattern, int idx, int length, RegExpNode* header)
+{
+    if (pattern[idx] != '\\')
+        throwError("Parse regexp failed: " ERROR_UNEXPECT_TOKEN);
+    idx++;
+    header->type = REGEXP_CHAR_SET;
+    switch(pattern[idx])
+    {
+        case 'd':
+            header->type = REGEXP_CHAR_SET;
+            header->charFrom = '0';
+            header->charTo = '9';
+            break;
+        case 'D':
+            parseCharSet("[^0-9]", 0, 6, header);
+            break;
+        case 'f':
+            header->charFrom = header->charTo = '\f';
+            break;
+        case 'n':
+            header->charFrom = header->charTo = '\n';
+            break;
+        case 'r':
+            header->charFrom = header->charTo = '\r';
+            break;
+        case 't':
+            header->charFrom = header->charTo = '\t';
+            break;
+        case 'v':
+            header->charFrom = header->charTo = '\v';
+            break;
+        case 's':
+            parseCharSet("[ \f\n\r\t\v]", 0, 8, header);
+            break;
+        case 'S':
+            parseCharSet("[^ \f\n\r\t\v]", 0, 9, header);
+            break;
+        case 'w':
+            parseCharSet("[A-Za-z0-9_]", 0, 12, header);
+            break;
+        case 'W':
+            parseCharSet("[^A-Za-z0-9_]", 0, 13, header);
+            break;
+        default:
+            header->type = REGEXP_CHAR;
+            header->charFrom = header->charTo = header->chr = pattern[idx];
+            break;
+    }
     return idx;
 }
 
@@ -255,7 +361,8 @@ RegExpNode* cloneNode(RegExpNode* origin)
     node->header = cloneNode(origin->header);
     node->optional = origin->optional;
     node->repeat = origin->repeat;
-    memcpy(node->charSet, origin->charSet, 256);
+    node->charFrom = origin->charFrom;
+    node->charTo = origin->charTo;
     for (RegExpNode* p = node; origin->next; p = p->next, origin = origin->next)
     {
         p->next = cloneNodeWithouNext(origin->next);
