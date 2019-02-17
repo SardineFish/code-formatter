@@ -24,6 +24,6 @@ typedef struct
 
 Token* createToken(char* name, char* attribute, int position);
 
-LexStream openLexStream(const char* filename);
+LexStream* openLexStream(const char* filename);
 
 Token* readToken(LexStream stream);

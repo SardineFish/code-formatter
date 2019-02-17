@@ -1,4 +1,4 @@
-.DEFAULT_GOAL := defaultBuild
+.DEFAULT_GOAL := all
 CC=gcc
 CFLAGS=
 SRC_DIR=src
@@ -6,7 +6,7 @@ OUT_DIR=build
 OBJ_DIR=obj
 SHARE_OBJ=obj/shared
 LIB_DIR=lib
-rm_win=del /q
+rm_win=rd /S /Q
 rm_unix=rm -r
 
 define win_mkdir
@@ -40,9 +40,11 @@ endif
 
 clean:
 ifeq ($(OS),Windows_NT)
-	$(rm_win) $(OBJ_DIR)\*
+	$(rm_win) $(OBJ_DIR)
+	$(rm_win) $(LIB_DIR)
 else
-	$(rm_unix) $(OBJ_DIR)/*
+	$(rm_unix) $(OBJ_DIR)
+	$(rm_unix) $(LIB_DIR)
 endif
 
 build_all: $(OBJ_DIR)/main.o $(LIB_DIR)/libreg-exp.a

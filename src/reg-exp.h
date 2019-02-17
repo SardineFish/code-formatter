@@ -16,8 +16,8 @@ struct RegExpNFANodeType
 };
 struct RegExpNFAEdgeType
 {
-    char chrLow;
-    char chrHigh;
+    unsigned char chrLow;
+    unsigned char chrHigh;
     RegExpNFANode* prior;
     RegExpNFANode* next;
 };

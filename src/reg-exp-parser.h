@@ -7,7 +7,7 @@ typedef struct RegExpNodeType RegExpNode;
 #include "reg-exp.h"
 #include "data-struct.h"
 
-//#define DEBUG
+#define DEBUG
 
 #define EMPTY_CHAR 0
 
@@ -27,9 +27,9 @@ enum
 struct RegExpNodeType
 {
     RegExpNodeType type;
-    char chr;
-    char charFrom;
-    char charTo;
+    unsigned char chr;
+    unsigned char charFrom;
+    unsigned char charTo;
     Boolean optional;
     Boolean repeat;
     Boolean selectable;
