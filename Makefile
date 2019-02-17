@@ -42,9 +42,12 @@ clean:
 ifeq ($(OS),Windows_NT)
 	$(rm_win) $(OBJ_DIR)
 	$(rm_win) $(LIB_DIR)
+	$(rm_win) $(OUT_DIR)
+
 else
 	$(rm_unix) $(OBJ_DIR)
 	$(rm_unix) $(LIB_DIR)
+	$(rm_unix) $(OUT_DIR)
 endif
 
 build_all: $(OBJ_DIR)/main.o $(LIB_DIR)/libreg-exp.a
