@@ -11,6 +11,18 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "build test",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "test",
+                "CFLAGS=-g"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ]
         }
     ]
 }

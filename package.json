@@ -1,0 +1,28 @@
+{
+  "name": "code-formatter",
+  "version": "1.0.0",
+  "description": "A simple code formatter following the compilers principles.",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "npx mocha test/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SardineFish/code-formatter.git"
+  },
+  "author": "SardineFish",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/SardineFish/code-formatter/issues"
+  },
+  "homepage": "https://github.com/SardineFish/code-formatter#readme",
+  "dependencies": {
+    "@types/node": "^11.9.4",
+    "chai": "^4.2.0",
+    "child_process": "^1.0.2",
+    "mocha": "^5.2.0"
+  }
+}

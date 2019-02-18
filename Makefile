@@ -4,6 +4,9 @@ CFLAGS=
 SRC_DIR=src
 OUT_DIR=build
 OBJ_DIR=obj
+OBJ_TEST=obj/test
+TEST_DIR=test
+TEST_OUT=test/build
 SHARE_OBJ=obj/shared
 LIB_DIR=lib
 rm_win=rd /S /Q
@@ -25,17 +28,24 @@ $(SHARE_OBJ)/%.o: $(SRC_DIR)/%.c
 # $(call create_dir,$(@D))
 	$(CC) --std=c11 -c -fPIC $^ -o $@ $(CFLAGS)
 
+$(OBJ_TEST)/%.o: $(TEST_DIR)/%.c
+	$(CC) --std=c11 -c $^ -o $@ $(CFLAGS)
+
 build_dir:
 ifeq ($(OS),Windows_NT)
 	$(call win_mkdir,$(OBJ_DIR))
 	$(call create_dir,$(SHARE_OBJ))
 	$(call win_mkdir, $(OUT_DIR))
 	$(call win_mkdir, $(LIB_DIR))
+	$(call win_mkdir, $(OBJ_TEST))
+	$(call win_mkdir, $(TEST_OUT))
 else
 	mkdir -p $(OBJ_DIR)
 	mkdir -p $(SHARE_OBJ)
 	mkdir -p $(OUT_DIR)
 	mkdir -p $(LIB_DIR)
+	mkdir -p $(OBJ_TEST)
+	mkdir -p $(TEST_OUT)
 endif
 
 clean:
@@ -52,7 +62,16 @@ endif
 
 build_all: $(OBJ_DIR)/main.o $(LIB_DIR)/libreg-exp.a
 	$(CC) $(OBJ_DIR)/main.o -L$(LIB_DIR) -lreg-exp -o $(OUT_DIR)/test $(CFLAGS)
-	
+
+regexp_test: $(LIB_DIR)/libreg-exp.a $(OBJ_TEST)/test-regex.o
+	$(CC) $(OBJ_TEST)/test-regex.o -L$(LIB_DIR) -lreg-exp -o $(TEST_OUT)/test-regexp $(CFLAGS)
+
+build_test: regexp_test
+
+test: build_dir build_test
+
+run_test: test
+	npm test
 
 all: build_dir build_all
 

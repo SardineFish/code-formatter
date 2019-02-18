@@ -7,7 +7,7 @@ typedef struct RegExpNodeType RegExpNode;
 #include "reg-exp.h"
 #include "data-struct.h"
 
-#define DEBUG
+//#define DEBUG
 
 #define EMPTY_CHAR 0
 
