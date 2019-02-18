@@ -38,6 +38,7 @@ ArrayList* moveTo(ArrayList* set, char chr, int stateCount)
             }
         }
     }
+    free(stateExist);
     return out;
 }
 
@@ -52,11 +53,13 @@ ArrayList* getNextStates(ArrayList* currentStates, char chr, int stateCount)
     }
     destroyArrayList(currentStates);
     destroyArrayList(moveSet);
+    free(stateExist);
     return nextStates;
 }
 
 char* regExpMatch(RegExp* regexp, const char* text, Boolean greedy)
 {
+    Boolean found = FALSE;
     ArrayList* currentStates = createArrayList(regexp->totalStates);
     byte* stateExist = (byte*)calloc(regexp->totalStates, sizeof(char));
     emptyClosure(regexp->NFA, currentStates, stateExist, regexp->totalStates);
@@ -74,7 +77,10 @@ char* regExpMatch(RegExp* regexp, const char* text, Boolean greedy)
             {
                 lastMatchLength = i + 1;
                 if (!greedy)
-                    return result;
+                {
+                    found = TRUE;
+                    goto Exit;
+                }
             }
         }
         else
@@ -82,15 +88,34 @@ char* regExpMatch(RegExp* regexp, const char* text, Boolean greedy)
             if (greedy)
             {
                 result[lastMatchLength] = 0;
-                return result;
+                found = TRUE;
+                goto Exit;
             }
-            return NULL;
+            found = FALSE;
+            goto Exit;
         }
     }
+Exit:
     if (greedy)
     {
         result[lastMatchLength] = 0;
-        return result;
+        found = TRUE;
     }
+    if(lastMatchLength==0)
+    {
+        ArrayList* initialState = createArrayList(regexp->totalStates);
+        emptyClosure(regexp->NFA, initialState, stateExist, regexp->totalStates);
+        if (listIndexOf(initialState,regexp->finalState)>=0)
+        {
+            found = TRUE;
+        }
+        else
+            found = FALSE;
+        destroyArrayList(initialState);
+    }
+    destroyArrayList(currentStates);
+    free(stateExist);
+    if(found)
+        return result;
     return NULL;
 }

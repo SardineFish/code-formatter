@@ -1,12 +1,30 @@
-const exec = require("child_process").exec;
+const { exec , spawn} = require("child_process");
 const promisify = require("util").promisify;
 
-module.exports.test = async function(path, args)
+/**
+ * @param {string[]} args
+ */
+module.exports.test = function(path, args, input)
 {
-    const { stdout } = await promisify(exec)([`"${path}"`, ...args.map(arg=>`"${arg}"`)].join(" "));
+    return new Promise((resolve, reject) =>
+    {
+        const child = spawn(`"${path}"`, args);
+        child.stdin.write(input);
+        child.stdin.end();
+        child.stdout.on("data", (data) => {
+            resolve(data.toString());
+        });
+    });
+    /*
+    //console.log([`"${path}"`, ...args.map(arg => `"${arg.replace(/"/g,'\\"').replace(/\\/g,'\\\\')}"`)].join(" "));
+    child.on("exit", (code, signal) => console.log(`${code}: ${signal}`));
+    //child.stdin.pipe(process.stdin);
+    //child.stdin.write("abc*");
+    //child.stdin.write("abccc");
+    const { stdout } = await promisify(exec)([`"${path}"`, ...args.map(arg => `"${arg.replace(/"/g, '\\"').replace(/\\\\"/g, '\\\\\\"')}"`)].join(" "));
     if (/null(\r\n|\r|\n)/.test(stdout))
         return null;
-    return /(.*)(\r\n)/s.exec(stdout)[1];
+    return /(.*)(\r\n)/s.exec(stdout)[1];*/
 }
 
 module.exports.asyncForEach = async function (array, callback)

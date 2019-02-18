@@ -68,6 +68,8 @@ regexp_test: $(LIB_DIR)/libreg-exp.a $(OBJ_TEST)/test-regex.o
 
 build_test: regexp_test
 
+dir: build_dir
+
 test: build_dir build_test
 
 run_test: test
