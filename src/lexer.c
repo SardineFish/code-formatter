@@ -1,4 +1,5 @@
 #include "lexer.h"
+#include "reg-exp.h"
 #include <stdlib.h>
 
 Token* createToken(char* name, char* attribute, int position)
@@ -27,17 +28,36 @@ inline char readChar(LexStream* stream)
 
 Token* readToken(LexStream* stream)
 {
-    char chr;
-SkipWhiteSpace:
-    chr = readChar(stream);
-    if(chr==' '||chr=='\r'||chr=='\n'||chr=='\t')
-        goto SkipWhiteSpace;
-    if(chr == '/')
-    {
-        chr = readChar(stream);
-        if(chr=='*')
-        {
-            
-        }
-    }
+    RegExp* regSpace = regExp("\\s+");
+    RegExp* regComment = regExp("(//.*\r\n)");
+    RegExp* regID = regExp("[_A-Za-z][_A-Za-z0-9]*");
+    RegExp* regString = regExp("\"([^\\\"]|\\\\S)*\"");
+    RegExp* regNumber = regExp("((\\d)+)((\\.((\\d)+))?)((e(\\+|-)?((\\d)+))?)");
+    RegExp* regOperator = regExp("(->)|(\\+\\+|--)|(\\|\\||&&)|((\\+|-|\\*|/|%|=|&|\\||\\^|<<|>>|<|>|=|!)=?)|(\\?|:|,|\\.)");
+    RegExp* regComment = regExp("//.*\r\n|/\\*.*\\*/");
+
+    char* keywords[] = {
+        "#include",
+        "#define"
+        "void",
+        "char",
+        "short",
+        "int",
+        "long",
+        "unsigned",
+        "double"
+        "float",
+        "if",
+        "else if",
+        "else",
+        "for",
+        "while",
+        "do",
+        "break",
+        "continue",
+        "return",
+        "switch",
+        "case",
+    };
+    char brackets[] = "()[]{}<>";
 }

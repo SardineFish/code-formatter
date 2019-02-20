@@ -29,7 +29,8 @@ function runTest(path, args, input) {
     });
 }
 
-describe("Testing RegExp", () => {
+describe("Testing RegExp", () =>
+{
     it("Numbers", async () =>
     {
         const testCase = {
@@ -56,8 +57,8 @@ describe("Testing RegExp", () => {
     it("Operator", async () =>
     {
         const testCase = {
-            regex: "(\\+\\+|--)|(\\|\\||&&)|((\\+|-|\\*|/|%|=|&|\\||\\^|<<|>>|<|>|=|!)=?)|(\\?|:)",
-            regexJS: /^((\+\+|--)|(\|\||&&)|((\+|-|\*|\/|%|=|&|\||\^|<<|>>|<|>|=|!)=?)|(\?|:))/,
+            regex: "(->)|(\\+\\+|--)|(\\|\\||&&)|((\\+|-|\\*|/|%|=|&|\\||\\^|<<|>>|<|>|=|!)=?)|(\\?|:|,|\\.)",
+            regexJS: /^((->)|(\+\+|--)|(\|\||&&)|((\+|-|\*|\/|%|=|&|\||\^|<<|>>|<|>|=|!)=?)|(\?|:|,|\.))/,
             samples: [
                 "1e-9",
                 "-",
@@ -73,8 +74,15 @@ describe("Testing RegExp", () => {
                 "|",
                 "!",
                 "^",
+                ">>",
+                ">>=",
                 "++5",
-                "-6"
+                "-6",
+                ",",
+                ".",
+                "*a",
+                "&a",
+                "->",
             ]
         };
         await testRegExp(testCase, true);
@@ -90,7 +98,7 @@ describe("Testing RegExp", () => {
                 '"escape\\n\\r\\b\\v\\t\\"\\\'"',
                 '"newline \r\n"',
                 '"mac \r"',
-                /*'"linux \n"',*/
+                //'"linux \n"',
             ]
         };
         await testRegExp(testCase, false);
@@ -110,5 +118,21 @@ describe("Testing RegExp", () => {
             ]
         };
         await testRegExp(testCase, true);
-    })
+    });
+
+    it("Comment", async () => {
+        const testCase = {
+            regex: '//.*\r\n|/\\*.*\\*/',
+            regexJS: /^((\/\*.*\*\/)|(\/\/.*\r\n))/,
+            samples: [
+                '//23333\r\n333',
+                '/*the boy next door.*/',
+                '/*********/',
+                '// /*23333*/ \r\n',
+                '/* // _A5s_we_can\r\n*/',
+                "/* * /* ** * **/"
+            ]
+        };
+        await testRegExp(testCase, false);
+    });
 });

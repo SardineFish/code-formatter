@@ -12,10 +12,10 @@
 
 void readString(char* buffer)
 {
-    for (int i = 0;;i++)
+    for (int i = 0;; i++)
     {
         buffer[i] = getchar();
-        if(!buffer[i])
+        if (!buffer[i])
             return;
     }
 }
@@ -28,28 +28,26 @@ int main(int argc, char* argv[])
 #endif
     char pattern[8192], source[8192];
     int greedy = 0;
-    if (argc>1 && strlen(argv[1]) == strlen("--greedy") && strcmp(argv[1], "--greedy") == 0)
+    if (argc > 1 && strlen(argv[1]) == strlen("--greedy") && strcmp(argv[1], "--greedy") == 0)
     {
         greedy = 1;
     }
     readString(pattern);
-    //printf("%s\n", pattern);
     readString(source);
-    //printf("%s\n", source);
     RegExp* regex = regExp(pattern);
     char* result = regExpMatch(regex, source, greedy);
     /*printf("%s\n", pattern);
     printf("%s\n", source);*/
-    /*
-    for (int i = 0; i < strlen(result)+1;i++)
-        printf("%c: %d\n", result[i], result[i]);*/
-        if (!result)
-            printf("null");
-        else
-        {
-            printf("%s", result);
-            if(strlen(result)==0)
-                putchar(0);
-        }
+
+    /*for (int i = 0; i < strlen(source) + 1; i++)
+        printf("%c:%d ", source[i], source[i]);*/
+    if (!result)
+        printf("null");
+    else
+    {
+        printf("%s", result);
+        if (strlen(result) == 0)
+            putchar(0);
+    }
     return 0;
 }
