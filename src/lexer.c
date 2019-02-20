@@ -72,7 +72,7 @@ Token* readToken(DocStream* stream)
     RegExp* regNumber = regExp("((\\d)+)((\\.((\\d)+))?)((e(\\+|-)?((\\d)+))?)", REG_F_GREEDY);
     RegExp* regOperator = regExp("(->)|(\\+\\+|--)|(\\|\\||&&)|((\\+|-|\\*|/|%|=|&|\\||\\^|<<|>>|<|>|=|!)=?)|(\\?|:|,|\\.|;)",REG_F_GREEDY);
     RegExp* regComment = regExp("//.*\n|/\\*.*\\*/", REG_F_MULTILINE);
-    RegExp* regKeywords = regExp("#include|#define|void|char|short|int|long|unsigned|double|float|if|else if|else|for|while|do|break|continue|return|switch|case", REG_F_GREEDY);
+    RegExp* regKeywords = regExp("#include|#define|void|char|short|int|long|unsigned|double|float|if|else if|else|for|while|do|break|continue|return|switch|case|default", REG_F_GREEDY);
     char brackets[] = "()[]{}";
     char matchResult[MAX_STR_LENGTH];
 

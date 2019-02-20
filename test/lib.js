@@ -2,14 +2,18 @@ const { exec , spawn} = require("child_process");
 const promisify = require("util").promisify;
 
 /**
+ * @param {string} path
  * @param {string[]} args
+ * @param {string} input
  */
 module.exports.test = function(path, args, input)
 {
     return new Promise((resolve, reject) =>
     {
+        console.log(args);
         const child = spawn(`"${path}"`, args);
-        child.stdin.write(input);
+        if (input)
+            child.stdin.write(input);
         child.stdin.end();
         child.stdout.on("data", (data) => {
             resolve(data.toString());
