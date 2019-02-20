@@ -2,8 +2,8 @@
 #include "reg-exp-parser.h"
 #include "stdlib.h"
 
-RegExp* regExp(const char* pattern)
+RegExp* regExp(const char* pattern, RegExpFlag flag)
 {
-    RegExpNode* header = parse(pattern);
-    return compile(header);
+    RegExpNode* header = parse(pattern, flag);
+    return compile(header, flag);
 }

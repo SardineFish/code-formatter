@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
     }
     readString(pattern);
     readString(source);
-    RegExp* regex = regExp(pattern);
+    RegExp* regex = regExp(pattern, REG_F_NONE);
     char* result = regExpMatch(regex, source, greedy);
     /*printf("%s\n", pattern);
     printf("%s\n", source);*/

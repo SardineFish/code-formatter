@@ -126,7 +126,7 @@ void printNFA(LinkList* edgeSet)
 #endif
 
 
-RegExp* compile(const RegExpNode* root)
+RegExp* compile(const RegExpNode* root, RegExpFlag flag)
 {
     // Compile to NFA
     RegExpNFANode* initialState = createNFANode();
@@ -141,6 +141,7 @@ RegExp* compile(const RegExpNode* root)
 
     RegExp* regexp = (RegExp*)malloc(sizeof(RegExp));
     regexp->NFA = initialState;
+    regexp->flag = flag;
     regexp->finalState = finalState;
     regexp->totalStates = nodeSet->length;
     return regexp;

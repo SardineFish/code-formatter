@@ -1,5 +1,5 @@
-int a=0,b=5;
-void foo(char *x, int y)
+/*int a=0,b=5;
+void foo (char *x, int y)*/
 {
     &(int*)x+=y;
     return;

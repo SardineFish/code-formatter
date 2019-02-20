@@ -66,7 +66,10 @@ build_all: $(OBJ_DIR)/main.o $(LIB_DIR)/libreg-exp.a
 regexp_test: $(LIB_DIR)/libreg-exp.a $(OBJ_TEST)/test-regex.o
 	$(CC) $(OBJ_TEST)/test-regex.o -L$(LIB_DIR) -lreg-exp -o $(TEST_OUT)/test-regexp $(CFLAGS)
 
-build_test: regexp_test
+lexer_test: $(LIB_DIR)/libreg-exp.a $(OBJ_TEST)/test-lexer.o $(OBJ_DIR)/lexer.o
+	$(CC) $(OBJ_TEST)/test-lexer.o $(OBJ_DIR)/lexer.o -L$(LIB_DIR) -lreg-exp -o $(TEST_OUT)/test-lexer $(CFLAGS)
+
+build_test: regexp_test lexer_test
 
 dir: build_dir
 

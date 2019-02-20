@@ -37,5 +37,5 @@ struct RegExpNodeType
     RegExpNode* next;
 };
 
-RegExpNode* parse(const char* pattern);
-RegExp* compile(const RegExpNode* ast);
+RegExpNode* parse(const char* pattern, RegExpFlag flag);
+RegExp* compile(const RegExpNode* ast, RegExpFlag flag);
