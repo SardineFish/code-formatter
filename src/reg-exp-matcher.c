@@ -57,7 +57,7 @@ ArrayList* getNextStates(ArrayList* currentStates, char chr, int stateCount)
     return nextStates;
 }
 
-char* regExpMatch(RegExp* regexp, const char* text, Boolean greedy)
+Boolean regExpMatchNonAlloc(RegExp* regexp, const char* text, Boolean greedy, char* buffer)
 {
     Boolean found = FALSE;
     ArrayList* currentStates = createArrayList(regexp->totalStates);
@@ -101,11 +101,11 @@ Exit:
         result[lastMatchLength] = 0;
         found = TRUE;
     }
-    if(lastMatchLength==0)
+    if (lastMatchLength == 0)
     {
         ArrayList* initialState = createArrayList(regexp->totalStates);
         emptyClosure(regexp->NFA, initialState, stateExist, regexp->totalStates);
-        if (listIndexOf(initialState,regexp->finalState)>=0)
+        if (listIndexOf(initialState, regexp->finalState) >= 0)
         {
             found = TRUE;
         }
@@ -116,6 +116,23 @@ Exit:
     destroyArrayList(currentStates);
     free(stateExist);
     if(found)
-        return result;
-    return NULL;
+    {
+        int i = 0;
+        do{
+            buffer[i] = result[i];
+        } while (result[i++]);
+    }
+    free(result);
+    return found;
+}
+
+char* regExpMatch(RegExp* regexp, const char* text, Boolean greedy)
+{
+    char* buffer = (char*)calloc(strlen(text) + 1, sizeof(char));
+    if(!regExpMatchNonAlloc(regexp, text, greedy, buffer))
+    {
+        free(buffer);
+        return NULL;
+    }
+    return buffer;
 }

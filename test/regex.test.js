@@ -135,4 +135,35 @@ describe("Testing RegExp", () =>
         };
         await testRegExp(testCase, false);
     });
+
+    it("Key words", async () => {
+        const testCase = {
+            regex: '#include|#define|void|char|short|int|long|unsigned|double|float|if|else if|else|for|while|do|break|continue|return|switch|case',
+            regexJS: /#include|#define|void|char|short|int|long|unsigned|double|float|if|else if|else|for|while|do|break|continue|return|switch|case/,
+            samples: [
+                "#include",
+                "#define",
+                "void",
+                "char",
+                "short",
+                "int",
+                "long",
+                "unsigned",
+                "double",
+                "float",
+                "if",
+                "else if",
+                "else",
+                "for",
+                "while",
+                "do",
+                "break",
+                "continue",
+                "return",
+                "switch",
+                "case",
+            ]
+        };
+        await testRegExp(testCase, true);
+    });
 });

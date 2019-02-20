@@ -18,12 +18,23 @@ typedef struct
 
 typedef struct 
 {
-    FILE* fp;
-    int position;
-} LexStream;
+    char* text;
+    int length;
+} Document;
+
+typedef struct 
+{
+    Document* doc;
+    int pos;
+    int length;
+} DocStream;
 
 Token* createToken(char* name, char* attribute, int position);
 
-LexStream* openLexStream(const char* filename);
+Document* createDocument(const char* text);
 
-Token* readToken(LexStream stream);
+Boolean getText(Document* doc, int pos, int len);
+
+DocStream* createDocStream(Document* doc);
+
+Token* readToken(DocStream* doc);
