@@ -179,7 +179,7 @@ int listIndexOf(ArrayList* list, void* element)
 }
 
 // Algorithm djb2
-unsigned long hash(unsigned char* str)
+unsigned long hash(const unsigned char* str)
 {
     unsigned long hash = 5381;
     int c;
@@ -199,7 +199,7 @@ Map* createMap(int maxSize)
     map->length = 0;
     return map;
 }
-void* getMapValue(Map* map, char* key)
+void* getMapValue(Map* map,const char* key)
 {
     unsigned long hashCode = hash(key);
     int base = hashCode % map->_size;

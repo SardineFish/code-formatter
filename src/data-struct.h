@@ -53,7 +53,9 @@ typedef struct
 } Map;
 
 Map* createMap(int maxSize);
-void* getMapValue(Map* map, char* key);
+void* getMapValue(Map* map,const char* key);
 void setMapValue(Map* map, char* key, void* value);
 char** mapKeys(Map* map);
 void** mapValues(Map* map);
+#define mapGetValue getMapValue
+#define mapSetValue setMapValue

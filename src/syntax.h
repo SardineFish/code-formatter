@@ -22,7 +22,7 @@ typedef struct
 {
     TerminalType type;
     char* tokenName;
-    ProductionGroup** nonTerminal;
+    ProductionGroup* nonTerminal;
     Boolean empty;
 } Terminal;
 
@@ -53,4 +53,11 @@ typedef struct
     ASTNode* root;
 } SyntaxTree;
 
+typedef struct
+{
+    Map* patternSet;
+    ProductionGroup* entry;
+} SyntaxDef;
+
 Map* analyseBNF(const char* input);
+SyntaxDef* compileBNF(const char* input, const char* entry);
