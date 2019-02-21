@@ -1,5 +1,7 @@
 #include "data-struct.h"
+#include "error.h"
 #include <stdlib.h>
+#include <string.h>
 
 ListNode* createNode(void* element)
 {
@@ -115,8 +117,31 @@ void listCat(LinkList* dst, LinkList* src)
         dst->tail->next = src->header;
         dst->length += src->length;
     }
-    
-    
+}
+
+void destroyList(LinkList* list)
+{
+    ListNode* p = list->header;
+    ListNode* next;
+    while(p)
+    {
+        next = p->next;
+        free(p);
+        p = next;
+    }
+    free(list);
+}
+
+int listToArray(LinkList* list, void*** array)
+{
+    void** arr = (void**)calloc(list->length, sizeof(void*));
+    int i = 0;
+    for (ListNode* p = list->header; p;p=p->next)
+    {
+        arr[i++] = p->element;
+    }
+    *array = arr;
+    return list->length;
 }
 
 LinkList* createLinkList()
@@ -135,7 +160,7 @@ ArrayList* createArrayList(int maxLength)
     list->maxSize = maxLength;
     return list;
 }
-void arrayListAdd(ArrayList* list,void* element)
+void arrayListAdd(ArrayList* list, void* element)
 {
     list->list[list->length++] = element;
 }
@@ -151,4 +176,96 @@ int listIndexOf(ArrayList* list, void* element)
             return i;
 
     return -1;
+}
+
+// Algorithm djb2
+unsigned long hash(unsigned char* str)
+{
+    unsigned long hash = 5381;
+    int c;
+
+    while (c = *str++)
+        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+
+    return hash;
+}
+
+Map* createMap(int maxSize)
+{
+    maxSize *= 2;
+    Map* map = (Map*)malloc(sizeof(Map));
+    map->_size = maxSize;
+    map->items = (void*)calloc(maxSize, sizeof(KeyValuePair*));
+    map->length = 0;
+    return map;
+}
+void* getMapValue(Map* map, char* key)
+{
+    unsigned long hashCode = hash(key);
+    int base = hashCode % map->_size;
+    for (int i = 0; i < map->_size; i++)
+    {
+        int idx = (base + i) % map->_size;
+        if(!map->items[idx])
+            return NULL;
+        if (strcmp(map->items[idx]->key, key) == 0)
+        {
+            return map->items[idx]->value;
+        }
+    }
+    return NULL;
+}
+void setMapValue(Map* map, char* key, void* value)
+{
+    unsigned long hashCode = hash(key);
+    int base = hashCode % map->_size;
+    for (int i = 0; i < map->_size; i++)
+    {
+        int idx = (base + i) % map->_size;
+        if(!map->items[idx])
+        {
+            map->items[idx] = (KeyValuePair*)malloc(sizeof(KeyValuePair));
+            map->items[idx]->key = key;
+            map->items[idx]->value = value;
+            map->length++;
+            return;
+        }
+        else if (strcmp(map->items[idx]->key, key) == 0)
+        {
+            map->items[idx]->value = value;
+            map->length++;
+            return;
+        }
+    }
+    throwError("Hash table over flow.");
+}
+char** mapKeys(Map* map)
+{
+    ArrayList* list = createArrayList(map->length);
+    for (int i = 0; i < map->_size; i++)
+    {
+        KeyValuePair* pair = map->items[i];
+        if (pair)
+        {
+            arrayListAdd(list, pair->key);
+        }
+    }
+    char** keys = (char**)list->list;
+    free(list);
+    return keys;
+}
+void** mapValues(Map* map)
+{
+    ArrayList* list = createArrayList(map->length);
+    for (int i = 0; i < map->_size; i++)
+    {
+        KeyValuePair* pair = map->items[i];
+        if (pair)
+        {
+            arrayListAdd(list, pair->value);
+        }
+    }
+    void** values = list->list;
+    free(list);
+    return values;
 }

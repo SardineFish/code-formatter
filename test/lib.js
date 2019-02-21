@@ -10,7 +10,6 @@ module.exports.test = function(path, args, input)
 {
     return new Promise((resolve, reject) =>
     {
-        console.log(args);
         const child = spawn(`"${path}"`, args);
         if (input)
             child.stdin.write(input);

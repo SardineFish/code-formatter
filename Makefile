@@ -69,11 +69,14 @@ regexp_test: $(LIB_DIR)/libreg-exp.a $(OBJ_TEST)/test-regex.o
 lexer_test: $(LIB_DIR)/libreg-exp.a $(OBJ_TEST)/test-lexer.o $(OBJ_DIR)/lexer.o
 	$(CC) $(OBJ_TEST)/test-lexer.o $(OBJ_DIR)/lexer.o -L$(LIB_DIR) -lreg-exp -o $(TEST_OUT)/test-lexer $(CFLAGS)
 
+bnf_test: $(LIB_DIR)/libreg-exp.a $(OBJ_TEST)/test-bnf.o $(OBJ_DIR)/lexer.o $(OBJ_DIR)/syntax.o
+	$(CC) $(OBJ_TEST)/test-bnf.o $(OBJ_DIR)/lexer.o $(OBJ_DIR)/syntax.o -L$(LIB_DIR) -lreg-exp -o $(TEST_OUT)/test-bnf $(CFLAGS)
+
 build_test: regexp_test lexer_test
 
 dir: build_dir
 
-test: build_dir build_test
+test: build_dir build_test bnf_test
 
 run_test: test
 	npm test
