@@ -23,6 +23,12 @@ typedef struct
     int length;
 } DocStream;
 
+typedef struct
+{
+    Token** tokens;
+    int count;
+}TokenDoc;
+
 Token* createToken(char* name, char* attribute, int position);
 
 Document* createDocument(char* text);
@@ -32,3 +38,5 @@ Boolean getText(Document* doc, char* buffer, int pos, int len);
 DocStream* createDocStream(Document* doc);
 
 Token* readToken(DocStream* doc);
+
+TokenDoc* getTokens(Document* doc);

@@ -138,3 +138,80 @@ SyntaxDef* compileBNF(const char* input, const char* entry)
 SyntaxTree* parseSyntax(const SyntaxDef* syntax, const char* source)
 {
 }
+
+ASTNode* createASTNode(ASTNodeType type)
+{
+    ASTNode* node = (ASTNode*)malloc(sizeof(ASTNode));
+    node->type = type;
+    node->children = NULL;
+    node->count = 0;
+    node->production = NULL;
+    node->token = NULL;
+    return node;
+}
+
+ASTNode* topDownAnalyseInternal(ProductionGroup* group, TokenDoc* doc, int* idx);
+
+ASTNode* topDownAnalyseProduction(ProductionGroup* group, const Production* production, TokenDoc* doc, int* idx)
+{
+    ASTNode* node = createASTNode(AST_NON_TERMINAL);
+    node->production = group;
+    LinkList* list = createLinkList();
+    for (int i = 0; i < production->count;i++)
+    {
+        Terminal* term = production->sequence[i];
+        if(term->empty)
+            continue;
+        if(term->type == NON_TERMINAL)
+        {
+            ASTNode* nonTermNode = topDownAnalyseInternal(term->nonTerminal, doc, idx);
+            if(!nonTermNode)
+                goto Failed;
+            listAdd(list, nonTermNode);
+        }
+        else if(term->type == TERMINAL )
+        {
+            if (*idx >= doc->count)
+                goto Failed;
+            else if(strcmp(term->tokenName,doc->tokens[*idx]->name)==0)
+            {
+                ASTNode* termNode = createASTNode(AST_TERMINAL);
+                termNode->token = doc->tokens[*idx];
+                (*idx)++;
+                listAdd(list, termNode);
+            }
+            else
+                goto Failed;
+        }
+        else
+            goto Failed;
+    }
+    node->count = listToArray(list, (void***)&node->children);
+    return node;
+Failed:
+    return NULL;
+}
+
+ASTNode* topDownAnalyseInternal(ProductionGroup* group, TokenDoc* doc, int *idx)
+{
+    for (int i = 0; i < group->count;i++)
+    {
+        int currentIdx = *idx;
+        Production* production = group->productions[i];
+        ASTNode* node = topDownAnalyseProduction(group, production, doc, &currentIdx);
+        if(node)
+        {
+            *idx = currentIdx;
+            return node;
+        }
+    }
+    return NULL;
+}
+
+SyntaxTree* topDownAnalyse(const SyntaxDef* syntax, char* source)
+{
+    SyntaxTree* tree = (SyntaxTree*)malloc(sizeof(SyntaxTree));
+    TokenDoc* doc = getTokens(createDocument(source));
+    int idx = 0;
+    tree->root = topDownAnalyseInternal(syntax->entry, doc, &idx);
+}

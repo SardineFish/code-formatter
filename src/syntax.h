@@ -45,7 +45,7 @@ struct ASTNodeStruct
 {
     ProductionGroup* production;
     Token* token;
-    ASTNode* children;
+    ASTNode** children;
     ASTNodeType type;
     int count;
 };
@@ -65,3 +65,5 @@ Map* analyseBNF(const char* input);
 SyntaxDef* compileBNF(const char* input, const char* entry);
 
 SyntaxTree* parseSyntax(const SyntaxDef* syntax, const char* source);
+
+SyntaxTree* topDownAnalyse(const SyntaxDef* syntax, char* source);

@@ -4,6 +4,7 @@
         "xstring": "cpp",
         "reg-exp.h": "c",
         "reg-exp-parser.h": "c",
-        "link-list.h": "c"
+        "link-list.h": "c",
+        "syntax.h": "c"
     }
 }

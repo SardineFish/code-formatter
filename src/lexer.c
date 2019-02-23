@@ -136,7 +136,7 @@ NextToken:
     if (regExpMatchNonAlloc(regID, subStr(stream->doc, idx), TRUE, matchResult) && strlen(matchResult) > 0)
     {
         stream->pos = idx + strlen(matchResult);
-        return createToken("identifier", strClone(matchResult), idx);
+        return createToken("id", strClone(matchResult), idx);
     }
 
     // Get number
@@ -156,4 +156,16 @@ NextToken:
     char msg[MAX_STR_LENGTH];
     sprintf(msg, "Unexpect token '%c' at %d", stream->doc->text[idx], idx);
     throwError(msg);
+}
+
+TokenDoc* getTokens(Document* doc)
+{
+    DocStream* stream = createDocStream(doc);
+    LinkList* list = createLinkList();
+    Token* token;
+    while(token=readToken(stream))
+        listAdd(list, token);
+    TokenDoc* tokens = (TokenDoc*)malloc(sizeof(TokenDoc));
+    tokens->count = listToArray(list, (void***)&tokens->tokens);
+    return tokens;
 }
