@@ -130,8 +130,8 @@ SyntaxDef* compileBNF(const char* input, const char* entry)
     SyntaxDef* syntax = (SyntaxDef*)malloc(sizeof(SyntaxDef));
     syntax->patternSet = patternSet;
     syntax->entry = mapGetValue(patternSet, entry);
-    escapeLeftRecursion(syntax);
-    bnfPostProcess(syntax->patternSet);
+    //escapeLeftRecursion(syntax);
+    //bnfPostProcess(syntax->patternSet);
     return syntax;
 }
 

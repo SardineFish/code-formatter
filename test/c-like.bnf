@@ -1,0 +1,55 @@
+<syntax> ::= <extern-statement-sequence>
+<extern-statement-sequence> ::= <extern-statement> <extern-statement-sequence-1> | ""
+<extern-statement> ::= <var-def> ';' | <function-def>
+<var-def> ::= <signed-type> <var-list>
+<var-list> ::= <name> <var-init> <var-list-1>
+<name> ::= 'id'
+<signed-type> ::= 'unsigned' <type-ptr> | <type-ptr>
+<type-ptr> ::= <type> <type-ptr-1>
+<type> ::= 'char' | 'short' | 'int' | 'long' | 'long long' | 'float' | 'double' | 'id'
+<var-init> ::= '=' <expr> | ""
+<function-def> ::= 'unsigned' <type-ptr> <name> '(' <params> ')' <block> | 'char' <type-ptr-1> <name> '(' <params> ')' <block> | 'short' <type-ptr-1> <name> '(' <params> ')' <block> | 'int' <type-ptr-1> <name> '(' <params> ')' <block> | 'long' <type-ptr-1> <name> '(' <params> ')' <block> | 'long long' <type-ptr-1> <name> '(' <params> ')' <block> | 'float' <type-ptr-1> <name> '(' <params> ')' <block> | 'double' <type-ptr-1> <name> '(' <params> ')' <block> | 'id' <type-ptr-1> <name> '(' <params> ')' <block>
+<params> ::= <param> <params-1> | ""
+<param> ::= 'unsigned' <type-ptr> <name> | 'char' <type-ptr-1> <name> | 'short' <type-ptr-1> <name> | 'int' <type-ptr-1> <name> | 'long' <type-ptr-1> <name> | 'long long' <type-ptr-1> <name> | 'float' <type-ptr-1> <name> | 'double' <type-ptr-1> <name> | 'id' <type-ptr-1> <name>
+<body> ::= <statement> <body-1> | ""
+<statement> ::= <if> | <for> | <while> | <do-while> | <expr> ';' | 'unsigned' <type-ptr> <var-list> ';' | 'char' <type-ptr-1> <var-list> ';' | 'short' <type-ptr-1> <var-list> ';' | 'int' <type-ptr-1> <var-list> ';' | 'long' <type-ptr-1> <var-list> ';' | 'long long' <type-ptr-1> <var-list> ';' | 'float' <type-ptr-1> <var-list> ';' | 'double' <type-ptr-1> <var-list> ';' | 'id' <type-ptr-1> <var-list> ';' | <return-statement> ';'
+<return-statement> ::= 'return' <return-statement-1>
+<if> ::= 'if' '(' <expr> ')' <block>
+<else-if> ::= 'else if' '(' <expr> ')' <block> | ""
+<else> ::= 'else' <block> | ""
+<for> ::= 'for' '(' <for-statement-1> ';' <for-statement-2> ';' <for-statement-3> ')' <block-body>
+<for-statement-1> ::= <expr> | 'unsigned' <type-ptr> <var-list> | 'char' <type-ptr-1> <var-list> | 'short' <type-ptr-1> <var-list> | 'int' <type-ptr-1> <var-list> | 'long' <type-ptr-1> <var-list> | 'long long' <type-ptr-1> <var-list> | 'float' <type-ptr-1> <var-list> | 'double' <type-ptr-1> <var-list> | 'id' <type-ptr-1> <var-list>
+<for-statement-2> ::= <expr>
+<for-statement-3> ::= <expr>
+<while> ::= 'while' '(' <expr> ')' <block-body>
+<do-while> ::= 'do' <block-body> 'while' '(' <expr> ')' ';'
+<block-body> ::= '{' <body> '}' | 'if' '(' <expr> ')' <block> | 'for' '(' <for-statement-1> ';' <for-statement-2> <for-statement-3> ')' <block-body> | 'while' '(' <expr> ')' <block-body> | 'do' <block-body> 'while' '(' <expr> ')' ';' | <expr> ';' | 'unsigned' <type-ptr> <var-list> ';' | 'char' <type-ptr-1> <var-list> ';' | 'short' <type-ptr-1> <var-list> ';' | 'int' <type-ptr-1> <var-list> ';' | 'long' <type-ptr-1> <var-list> ';' | 'long long' <type-ptr-1> <var-list> ';' | 'float' <type-ptr-1> <var-list> ';' | 'double' <type-ptr-1> <var-list> ';' | 'id' <type-ptr-1> <var-list> ';' | 'return' <block-body-1>
+<block> ::= '{' <body> '}'
+<expr> ::= <assign>
+<assign> ::= <logic-term> <assign-1>
+<assign-op> ::= '=' | '+=' | '-=' | '*=' | '/=' | '%' | '<<=' | '>>=' | '&=' | '^='
+<logic-term> ::= <cpr-term> <logic-term-1>
+<logic-op> ::= '&' | '^' | '|' | '&&' | '||'
+<cpr-term> ::= <plus-term> <cpr-term-1>
+<compare-op> ::= '>' | '<' | '>=' | '<=' | '==' | '!='
+<plus-term> ::= <term> <plus-term-1>
+<term> ::= <factor> <term-1>
+<factor> ::= 'number' | <prefix-obj>
+<prefix-obj> ::= <prefix> <prefix-obj> | <postfix-obj>
+<postfix-obj> ::= <obj> <postfix-obj-1>
+<obj> ::= 'id' | '(' <expr> ')'
+<prefix> ::= '++' | '--' | '-' | '~' | '*' | '&' | '!' | '(' <signed-type> ')'
+<postfix> ::= '++' | '--' | '[' <expr> ']' | '.' 'id' | '->'
+<type-ptr-1> ::= '*' <type-ptr-1> | ""
+<logic-term-1> ::= '&' <cpr-term> <logic-term-1> | '^' <cpr-term> <logic-term-1> | '|' <cpr-term> <logic-term-1> | '&&' <cpr-term> <logic-term-1> | '||' <cpr-term> <logic-term-1> | ""
+<cpr-term-1> ::= '>' <plus-term> <cpr-term-1> | '<' <plus-term> <cpr-term-1> | '>=' <plus-term> <cpr-term-1> | '<=' <plus-term> <cpr-term-1> | '==' <plus-term> <cpr-term-1> | '!=' <plus-term> <cpr-term-1> | ""
+<plus-term-1> ::= '+' <term> <plus-term-1> | '-' <term> <plus-term-1> | ""
+<term-1> ::= '*' <factor> <term-1> | '/' <factor> <term-1> | ""
+<postfix-obj-1> ::= '++' <postfix-obj-1> | '--' <postfix-obj-1> | '[' <expr> ']' <postfix-obj-1> | '.' 'id' <postfix-obj-1> | '->' <postfix-obj-1> | ""
+<extern-statement-sequence-1> ::= <extern-statement-sequence> | ""
+<var-list-1> ::= ',' <var-list> | ""
+<params-1> ::= ',' <params> | ""
+<body-1> ::= <body> | ""
+<return-statement-1> ::= <expr> | ""
+<block-body-1> ::= <expr> ';' | ';'
+<assign-1> ::= <assign-op> <assign> | ""
