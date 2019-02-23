@@ -18,6 +18,7 @@ char* createStr(int size)
 ProductionGroup* createProductionGroup(char* name)
 {
     ProductionGroup* group = (ProductionGroup*)malloc(sizeof(ProductionGroup));
+    group->productionList = NULL;
     group->name = name;
     group->count = 0;
     group->productions = NULL;
@@ -27,6 +28,7 @@ ProductionGroup* createProductionGroup(char* name)
 Production* createProduction()
 {
     Production* production = (Production*)malloc(sizeof(Production));
+    production->sequenceList = NULL;
     production->sequence = NULL;
     production->count = 0;
     return production;
@@ -42,15 +44,28 @@ Terminal* createTerminal(TerminalType type)
     return terminal;
 }
 
+void destroyTerminal(Terminal* terminal)
+{
+    free(terminal->tokenName);
+    free(terminal);
+}
+
 void bnfPostProcess(Map* set)
 {
     ProductionGroup** groups = (ProductionGroup**)mapValues(set);
     for (int i = 0; i < set->length; i++)
     {
         ProductionGroup* group = groups[i];
+        if(group->productions)
+            free(group->productions);
+        group->count = listToArray(group->productionList, (void***)&group->productions);
+
         for (int j = 0; j < group->count; j++)
         {
             Production* production = group->productions[j];
+            if(production->sequence)
+                free(production->sequence);
+            production->count = listToArray(production->sequenceList, (void***)&production->sequence);
             for (int k = 0; k < production->count; k++)
             {
                 Terminal* term = production->sequence[k];
@@ -139,8 +154,9 @@ Map* analyseBNF(const char* input)
             {
                 Production* production = createProduction();
                 production->count = listToArray(unitSet, (void***)(&production->sequence));
+                production->sequenceList = unitSet;
                 listAdd(productionList, production);
-                destroyList(unitSet);
+                //destroyList(unitSet);
                 unitSet = createLinkList();
             }
             // complete production
@@ -148,10 +164,14 @@ Map* analyseBNF(const char* input)
             {
                 Production* production = createProduction();
                 production->count = listToArray(unitSet, (void***)(&production->sequence));
+                production->sequenceList = unitSet;
                 listAdd(productionList, production);
-                destroyList(unitSet);
+                //destroyList(unitSet);
+                unitSet = NULL;
                 productionGroup->count = listToArray(productionList, (void***)(&productionGroup->productions));
-                destroyList(productionList);
+                productionGroup->productionList = productionList;
+                //destroyList(productionList);
+                productionList = NULL;
                 setMapValue(productionSet, productionGroup->name, productionGroup);
                 break;
             }

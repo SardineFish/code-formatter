@@ -59,10 +59,27 @@ ListNode* getPrior(LinkList* list, ListNode* node)
     }
 }
 
-ListNode* removeNode(LinkList* list, ListNode* node)
+void* listRemoveNode(LinkList* list, ListNode* node)
 {
-    ListNode* prior = getPrior(list, node);
-    prior->next = node->next;
+    if(!node)
+        return NULL;
+    if(node == list->header)
+    {
+        list->header = list->header->next;
+        if(list->header==NULL)
+            list->tail = list->header;
+    }
+    else
+    {
+        ListNode* prior = getPrior(list, node);
+        prior->next = node->next;
+        if(node == list->tail)
+            list->tail = prior;
+    }
+    list->length--;
+    void* element = node->element;
+    free(node);
+    return element;
 }
 
 void* listRemove(LinkList* list, void* element)
@@ -117,6 +134,19 @@ void listCat(LinkList* dst, LinkList* src)
         dst->tail->next = src->header;
         dst->length += src->length;
     }
+}
+LinkList* listClone(LinkList* list)
+{
+    LinkList* dst = createLinkList();
+    return listAddRange(dst, list);
+}
+LinkList* listAddRange(LinkList* dst, LinkList* src)
+{
+    for (ListNode* p = src->header; p;p=p->next)
+    {
+        listAdd(dst, p->element);
+    }
+    return dst;
 }
 
 void destroyList(LinkList* list)
@@ -268,4 +298,21 @@ void** mapValues(Map* map)
     void** values = list->list;
     free(list);
     return values;
+}
+
+Boolean mapHasKey(Map* map, const char* key)
+{
+    unsigned long hashCode = hash(key);
+    int base = hashCode % map->_size;
+    for (int i = 0; i < map->_size; i++)
+    {
+        int idx = (base + i) % map->_size;
+        if (!map->items[idx])
+            return 0;
+        if (strcmp(map->items[idx]->key, key) == 0)
+        {
+            return 1;
+        }
+    }
+    return 0;
 }

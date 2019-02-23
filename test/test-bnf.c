@@ -39,7 +39,8 @@ int main(int argc, char* argv[])
         doc[i] = fgetc(fp);
     } while (doc[i++] != EOF);
     doc[i - 1] = 0;
-    Map* productionSet = analyseBNF(doc);
-    printBNF(productionSet);
+    SyntaxDef* syntax = compileBNF(doc, "S");
+    //Map* productionSet = analyseBNF(doc);
+    printBNF(syntax->patternSet);
     return 0;
 }

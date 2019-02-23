@@ -28,6 +28,7 @@ typedef struct
 
 typedef struct
 {
+    LinkList* sequenceList;
     Terminal** sequence;
     int count;
 } Production;
@@ -35,6 +36,7 @@ typedef struct
 struct ProductionGroupType
 {
     char* name;
+    LinkList* productionList;
     Production** productions;
     int count;
 };
@@ -61,3 +63,5 @@ typedef struct
 
 Map* analyseBNF(const char* input);
 SyntaxDef* compileBNF(const char* input, const char* entry);
+
+SyntaxTree* parseSyntax(const SyntaxDef* syntax, const char* source);

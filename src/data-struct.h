@@ -2,6 +2,7 @@
 
 typedef struct ListNodeType ListNode;
 typedef struct LinkListType LinkList;
+typedef int Boolean;
 
 struct LinkListType
 {
@@ -20,10 +21,13 @@ struct ListNodeType
 
 void listAdd(LinkList* list, void* element);
 void* listRemove(LinkList* list, void* element);
+void* listRemoveNode(LinkList* list, ListNode* node);
 int listExist(LinkList* list, void* element);
 void listCat(LinkList* dst, LinkList* src);
 void destroyList(LinkList* list);
 int listToArray(LinkList* list, void*** array);
+LinkList* listClone(LinkList* list);
+LinkList* listAddRange(LinkList* dst, LinkList* src);
 
 LinkList* createLinkList();
 
@@ -57,5 +61,6 @@ void* getMapValue(Map* map,const char* key);
 void setMapValue(Map* map, char* key, void* value);
 char** mapKeys(Map* map);
 void** mapValues(Map* map);
+Boolean mapHasKey(Map* map, const char* key);
 #define mapGetValue getMapValue
 #define mapSetValue setMapValue
