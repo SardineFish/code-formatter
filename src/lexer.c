@@ -68,7 +68,7 @@ Token* readToken(DocStream* stream)
 {
     RegExp* regSpace = regExp("\\s+", REG_F_GREEDY);
     RegExp* regID = regExp("[_A-Za-z][_A-Za-z0-9]*", REG_F_GREEDY);
-    RegExp* regString = regExp("\"([^\\\"]|\\\\S)*\"", REG_F_NONE);
+    RegExp* regString = regExp("\"([^\\\"]|\\\\\\S)*\"", REG_F_NONE);
     RegExp* regNumber = regExp("((\\d)+)((\\.((\\d)+))?)((e(\\+|-)?((\\d)+))?)", REG_F_GREEDY);
     RegExp* regOperator = regExp("(->)|(\\+\\+|--)|(\\|\\||&&)|((\\+|-|\\*|/|%|=|&|\\||\\^|<<|>>|<|>|=|!)=?)|(\\?|:|,|\\.|;)",REG_F_GREEDY);
     RegExp* regComment = regExp("//.*\n|/\\*.*\\*/", REG_F_MULTILINE);

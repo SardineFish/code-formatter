@@ -59,3 +59,8 @@ void foo (char *x, int y)
     } while(0);
     return;
 }
+
+int main()
+{
+    printf("Hello World!\n");
+}

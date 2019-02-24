@@ -93,6 +93,7 @@ describe("Testing RegExp", () =>
             regex: '"([^\\"]|\\\\\\S|\\")*"',
             regexJS: /^("([^\\"]|\\\S|\\")*")/,
             samples: [
+                '"Hello World!\\n"',
                 '"the boy next door."',
                 '"triple " quote"',
                 '"escape\\n\\r\\b\\v\\t\\"\\\'"',
