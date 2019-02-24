@@ -39,22 +39,31 @@
       <extern-statement-sequence>
         <extern-statement>
           <function-def>
-            "void"
+            <signed-type>
+              <type-ptr>
+                <type>
+                  "void"
             <name>
               "foo"
             "("
             <params>
               <param>
-                "char"
-                <type-ptr-1>
-                  "*"
+                <signed-type>
+                  <type-ptr>
+                    <type>
+                      "char"
+                    <type-ptr-1>
+                      "*"
                 <name>
                   "x"
               <params-1>
                 ","
                 <params>
                   <param>
-                    "int"
+                    <signed-type>
+                      <type-ptr>
+                        <type>
+                          "int"
                     <name>
                       "y"
             ")"
@@ -107,20 +116,24 @@
                         "for"
                         "("
                         <for-statement-1>
-                          "int"
-                          <var-list>
-                            <name>
-                              "i"
-                            <var-init>
-                              "="
-                              <expr>
-                                <assign>
-                                  <logic-term>
-                                    <cpr-term>
-                                      <plus-term>
-                                        <term>
-                                          <factor>
-                                            "0"
+                          <var-def>
+                            <signed-type>
+                              <type-ptr>
+                                <type>
+                                  "int"
+                            <var-list>
+                              <name>
+                                "i"
+                              <var-init>
+                                "="
+                                <expr>
+                                  <assign>
+                                    <logic-term>
+                                      <cpr-term>
+                                        <plus-term>
+                                          <term>
+                                            <factor>
+                                              "0"
                         ";"
                         <for-statement-2>
                           <expr>
@@ -135,7 +148,8 @@
                                             <obj>
                                               "i"
                                   <cpr-term-1>
-                                    "<"
+                                    <compare-op>
+                                      "<"
                                     <plus-term>
                                       <term>
                                         <factor>
@@ -157,7 +171,8 @@
                                             <obj>
                                               "i"
                                             <postfix-obj-1>
-                                              "++"
+                                              <postfix>
+                                                "++"
                         ")"
                         <block-body>
                           "{"
@@ -192,7 +207,8 @@
                                                                         <obj>
                                                                           "i"
                                                               <cpr-term-1>
-                                                                "<="
+                                                                <compare-op>
+                                                                  "<="
                                                                 <plus-term>
                                                                   <term>
                                                                     <factor>
@@ -338,36 +354,42 @@
                                                     <obj>
                                                       "i"
                                           <cpr-term-1>
-                                            ">"
+                                            <compare-op>
+                                              ">"
                                             <plus-term>
                                               <term>
                                                 <factor>
                                                   "1e16"
                                   ")"
                                   <block-body>
-                                    "continue"
-                                    ";"
+                                    <statement>
+                                      <continue-statement>
+                                        "continue"
+                                      ";"
                                 <else>
                                   "else"
                                   <block-body>
-                                    "if"
-                                    "("
-                                    <expr>
-                                      <assign>
-                                        <logic-term>
-                                          <cpr-term>
-                                            <plus-term>
-                                              <term>
-                                                <factor>
-                                                  <prefix-obj>
-                                                    <postfix-obj>
-                                                      <obj>
-                                                        "i"
-                                    ")"
-                                    <block-body>
-                                      "return"
-                                      <block-body-1>
-                                        ";"
+                                    <statement>
+                                      <if>
+                                        "if"
+                                        "("
+                                        <expr>
+                                          <assign>
+                                            <logic-term>
+                                              <cpr-term>
+                                                <plus-term>
+                                                  <term>
+                                                    <factor>
+                                                      <prefix-obj>
+                                                        <postfix-obj>
+                                                          <obj>
+                                                            "i"
+                                        ")"
+                                        <block-body>
+                                          <statement>
+                                            <return-statement>
+                                              "return"
+                                            ";"
                           "}"
                     <body-1>
                       <body>
@@ -391,29 +413,38 @@
                                                   "1"
                                     ")"
                                     <block-body>
-                                      <expr>
-                                        <assign>
-                                          <logic-term>
-                                            <cpr-term>
-                                              <plus-term>
-                                                <term>
-                                                  <factor>
-                                                    <prefix-obj>
-                                                      <postfix-obj>
-                                                        <obj>
-                                                          <func-call>
-                                                            "loop"
-                                                            "("
-                                                            <func-call-params>
-                                                              <func-call-param>
-                                                                <prefix>
-                                                                  "&"
-                                                                <prefix-obj>
-                                                                  <postfix-obj>
-                                                                    <obj>
-                                                                      "x"
-                                                            ")"
-                                      ";"
+                                      <statement>
+                                        <expr>
+                                          <assign>
+                                            <logic-term>
+                                              <cpr-term>
+                                                <plus-term>
+                                                  <term>
+                                                    <factor>
+                                                      <prefix-obj>
+                                                        <postfix-obj>
+                                                          <obj>
+                                                            <func-call>
+                                                              "loop"
+                                                              "("
+                                                              <func-call-params>
+                                                                <func-call-param>
+                                                                  <expr>
+                                                                    <assign>
+                                                                      <logic-term>
+                                                                        <cpr-term>
+                                                                          <plus-term>
+                                                                            <term>
+                                                                              <factor>
+                                                                                <prefix-obj>
+                                                                                  <prefix>
+                                                                                    "&"
+                                                                                  <prefix-obj>
+                                                                                    <postfix-obj>
+                                                                                      <obj>
+                                                                                        "x"
+                                                              ")"
+                                        ";"
                               "}"
                             "while"
                             "("
@@ -438,7 +469,10 @@
           <extern-statement-sequence>
             <extern-statement>
               <function-def>
-                "int"
+                <signed-type>
+                  <type-ptr>
+                    <type>
+                      "int"
                 <name>
                   "main"
                 "("
@@ -462,7 +496,14 @@
                                             "("
                                             <func-call-params>
                                               <func-call-param>
-                                                ""Hello World!\n""
+                                                <expr>
+                                                  <assign>
+                                                    <logic-term>
+                                                      <cpr-term>
+                                                        <plus-term>
+                                                          <term>
+                                                            <factor>
+                                                              ""Hello World!\n""
                                             ")"
                       ";"
                   "}"
