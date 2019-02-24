@@ -9,7 +9,7 @@
             "name": "(gdb) Test",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/test/build/test-lexer.exe",
+            "program": "${workspaceFolder}/test/build/test-formatter.exe",
             "args": ["./test/simple-code.c"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

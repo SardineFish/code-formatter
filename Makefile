@@ -75,6 +75,9 @@ bnf_test: $(LIB_DIR)/libreg-exp.a $(OBJ_TEST)/test-bnf.o $(OBJ_DIR)/lexer.o $(OB
 syntax_test: $(LIB_DIR)/libreg-exp.a $(OBJ_TEST)/test-syntax.o $(OBJ_DIR)/lexer.o $(OBJ_DIR)/syntax.o
 	$(CC) $(OBJ_TEST)/test-syntax.o $(OBJ_DIR)/lexer.o $(OBJ_DIR)/syntax.o -L$(LIB_DIR) -lreg-exp -o $(TEST_OUT)/test-syntax $(CFLAGS)
 
+syntax_test: $(LIB_DIR)/libreg-exp.a $(OBJ_TEST)/test-formatter.o $(OBJ_DIR)/lexer.o $(OBJ_DIR)/syntax.o $(OBJ_DIR)/formatter.o
+	$(CC) $(OBJ_TEST)/test-formatter.o $(OBJ_DIR)/lexer.o $(OBJ_DIR)/syntax.o $(OBJ_DIR)/formatter.o -L$(LIB_DIR) -lreg-exp -o $(TEST_OUT)/test-formatter $(CFLAGS)
+
 build_test: regexp_test lexer_test
 
 dir: build_dir

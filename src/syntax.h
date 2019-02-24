@@ -45,6 +45,7 @@ struct ASTNodeStruct
 {
     ProductionGroup* production;
     Token* token;
+    char* name;
     ASTNode** children;
     ASTNodeType type;
     int count;
@@ -61,6 +62,7 @@ typedef struct
     ProductionGroup* entry;
 } SyntaxDef;
 
+ASTNode* createASTNode(ASTNodeType type, char* name);
 Map* analyseBNF(const char* input);
 SyntaxDef* compileBNF(const char* input, const char* entry);
 

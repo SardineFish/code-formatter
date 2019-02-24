@@ -139,7 +139,7 @@ SyntaxTree* parseSyntax(const SyntaxDef* syntax, const char* source)
 {
 }
 
-ASTNode* createASTNode(ASTNodeType type)
+ASTNode* createASTNode(ASTNodeType type, char* name)
 {
     ASTNode* node = (ASTNode*)malloc(sizeof(ASTNode));
     node->type = type;
@@ -147,6 +147,7 @@ ASTNode* createASTNode(ASTNodeType type)
     node->count = 0;
     node->production = NULL;
     node->token = NULL;
+    node->name = name;
     return node;
 }
 
@@ -154,7 +155,7 @@ ASTNode* topDownAnalyseInternal(ProductionGroup* group, TokenDoc* doc, int* idx)
 
 ASTNode* topDownAnalyseProduction(ProductionGroup* group, const Production* production, TokenDoc* doc, int* idx)
 {
-    ASTNode* node = createASTNode(AST_NON_TERMINAL);
+    ASTNode* node = createASTNode(AST_NON_TERMINAL, group->name);
     node->production = group;
     LinkList* list = createLinkList();
     for (int i = 0; i < production->count;i++)
@@ -176,7 +177,7 @@ ASTNode* topDownAnalyseProduction(ProductionGroup* group, const Production* prod
                 goto Failed;
             else if(strcmp(term->tokenName,doc->tokens[*idx]->name)==0)
             {
-                ASTNode* termNode = createASTNode(AST_TERMINAL);
+                ASTNode* termNode = createASTNode(AST_TERMINAL, doc->tokens[*idx]->name);
                 termNode->token = doc->tokens[*idx];
                 (*idx)++;
                 listAdd(list, termNode);
