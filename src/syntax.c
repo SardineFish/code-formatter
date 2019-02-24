@@ -167,7 +167,8 @@ ASTNode* topDownAnalyseProduction(ProductionGroup* group, const Production* prod
             ASTNode* nonTermNode = topDownAnalyseInternal(term->nonTerminal, doc, idx);
             if(!nonTermNode)
                 goto Failed;
-            listAdd(list, nonTermNode);
+            if (nonTermNode->count > 0)
+                listAdd(list, nonTermNode);
         }
         else if(term->type == TERMINAL )
         {
@@ -214,4 +215,5 @@ SyntaxTree* topDownAnalyse(const SyntaxDef* syntax, char* source)
     TokenDoc* doc = getTokens(createDocument(source));
     int idx = 0;
     tree->root = topDownAnalyseInternal(syntax->entry, doc, &idx);
+    return tree;
 }

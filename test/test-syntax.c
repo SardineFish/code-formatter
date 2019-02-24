@@ -1,5 +1,27 @@
 #include "../src/syntax.h"
 #include <stdio.h>
+#define INDENT 2
+void printASTNode(ASTNode* node, int indent)
+{
+    for (int i = 0; i < indent; i++)
+    {
+        printf(" ");
+    }
+    if (node->type == AST_TERMINAL)
+        printf("\"%s\"\n", node->token->attribute);
+    else if (node->type == AST_NON_TERMINAL)
+    {
+        printf("<%s>\n", node->production->name);
+        for (int i = 0; i < node->count; i++)
+        {
+            printASTNode(node->children[i], indent + INDENT);
+        }
+    }
+}
+void printAST(SyntaxTree* ast)
+{
+    printASTNode(ast->root, 0);
+}
 int main(int argc, char* argv[])
 {
     char* path;
@@ -24,7 +46,8 @@ int main(int argc, char* argv[])
     code[i - 1] = 0;
 
     SyntaxDef* syntax = compileBNF(doc, "syntax");
-    topDownAnalyse(syntax, code);
+    SyntaxTree* ast = topDownAnalyse(syntax, code);
+    printAST(ast);
 
     return 0;
 }
