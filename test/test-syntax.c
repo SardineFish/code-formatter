@@ -24,10 +24,14 @@ void printAST(SyntaxTree* ast)
 }
 int main(int argc, char* argv[])
 {
-    char* path;
-    if (argc > 1)
-        path = argv[1];
-    FILE* fp = fopen("./test/c-like.bnf", "r");
+    char* pathBNF;
+    char* pathCode;
+    if (argc > 2)
+    {
+        pathBNF = argv[1];
+        pathCode = argv[2];
+    }
+    FILE* fp = fopen(pathBNF, "r");
     char doc[8192];
     char code[8192];
     int i = 0;
@@ -37,7 +41,7 @@ int main(int argc, char* argv[])
     } while (doc[i++] != EOF);
     doc[i - 1] = 0;
     fclose(fp);
-    fp = fopen("./test/simple-code.c", "r");
+    fp = fopen(pathCode, "r");
     i = 0;
     do
     {

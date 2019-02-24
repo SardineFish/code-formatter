@@ -347,26 +347,27 @@
                                   <block-body>
                                     "continue"
                                     ";"
-                                  <else-if-1>
-                                    <else-if>
-                                      "else if"
-                                      "("
-                                      <expr>
-                                        <assign>
-                                          <logic-term>
-                                            <cpr-term>
-                                              <plus-term>
-                                                <term>
-                                                  <factor>
-                                                    <prefix-obj>
-                                                      <postfix-obj>
-                                                        <obj>
-                                                          "i"
-                                      ")"
-                                      <block-body>
-                                        "return"
-                                        <block-body-1>
-                                          ";"
+                                <else>
+                                  "else"
+                                  <block-body>
+                                    "if"
+                                    "("
+                                    <expr>
+                                      <assign>
+                                        <logic-term>
+                                          <cpr-term>
+                                            <plus-term>
+                                              <term>
+                                                <factor>
+                                                  <prefix-obj>
+                                                    <postfix-obj>
+                                                      <obj>
+                                                        "i"
+                                    ")"
+                                    <block-body>
+                                      "return"
+                                      <block-body-1>
+                                        ";"
                           "}"
                     <body-1>
                       <body>

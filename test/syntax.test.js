@@ -13,4 +13,11 @@ describe("Syntax", () =>
         const expectResult = (await promisify(fs.readFile)(Path.resolve("./test/bnf-result.bnf"))).toString();
         expect(result).be.equal(expectResult);
     });
+
+    it("Top-down syntax analyse test", async () =>
+    {
+        const result = (await promisify(exec)(`"./test/build/test-syntax" "${Path.resolve("./test/c-like.bnf")}" "${Path.resolve("./test/code-test.c")}"`)).stdout;
+        const expectResult = (await promisify(fs.readFile)(Path.resolve("./test/ast-result.txt"))).toString();
+        expect(result).be.equal(expectResult);
+    })
 });
