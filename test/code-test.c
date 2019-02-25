@@ -31,7 +31,7 @@ float f = 0.00f;
 void foo (char *x, int y)
 {
     // The Bock body
-    *(int*)x += y;
+    *(int*)x += x[y+5];
     for (int i=0; i<y;i++)
     {
         if(!(i <= 0.5))

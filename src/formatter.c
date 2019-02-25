@@ -131,7 +131,7 @@ void formatBlockEndIndent(ASTNode* node, int indent)
 
 void formatIf(ASTNode* node, int indent)
 {
-    printf("if (");
+    printf("if(");
     formatASTNode(node->children[2], indent);
     printf(")");
     formatASTNode(node->children[4], indent);
@@ -179,7 +179,7 @@ ASTFormatDef formatDef[] = {
     {"switch-default", formatBlockEndIndent},
     {"prefix", formatFix},
     {"postfix", formatFix},
-    {"type-ptr", formatFix}
+    {"type-ptr", formatFix},
 };
 char* spaceArroundTokens[] = {
     "+",  "-",  "*",  "/",  "%",  "&",  "^",  "|", "<", ">", "?", "=", "&&",  "||", "++", "--",
@@ -191,10 +191,12 @@ char* spaceRightTokens[] = {
     "case",
     "unsigned",
 };
+char* forceInsertSpace[] = {"expr"};
 
 Map* formatMap;
 Map* spaceArroundTokensMap;
 Map* spaceRightTokensMap;
+Map* forceInsertSpaceMap;
 
 void formatASTNode(ASTNode* node, int indent)
 {
@@ -232,6 +234,11 @@ void formatASTNode(ASTNode* node, int indent)
 
 void formatAstNodeWithOutSpace(ASTNode* node, int indent)
 {
+    if (mapHasKey(forceInsertSpaceMap, node->name))
+    {
+        formatASTNode(node, indent);
+        return;
+    }
     if (node->type == AST_TERMINAL)
     {
         printf("%s", node->token->attribute);
@@ -258,17 +265,14 @@ void formatedCode(SyntaxTree* ast, char* buffer)
     formatMap = createMap(512);
     spaceArroundTokensMap = createMap(128);
     spaceRightTokensMap = createMap(128);
+    forceInsertSpaceMap = createMap(128);
     for (int i = 0; i < sizeof(formatDef) / sizeof(ASTFormatDef);i++)
-    {
         mapSetValue(formatMap, formatDef[i].name, formatDef[i].process);
-    }
     for (int i = 0; i < sizeof(spaceArroundTokens) / sizeof(char*);i++)
-    {
         mapSetValue(spaceArroundTokensMap, spaceArroundTokens[i], spaceArroundTokens[i]);
-    }
     for (int i = 0; i < sizeof(spaceRightTokens) / sizeof(char*);i++)
-    {
         mapSetValue(spaceRightTokensMap, spaceRightTokens[i], spaceRightTokens[i]);
-    }
+    for (int i = 0; i < sizeof(forceInsertSpace) / sizeof(char*); i++)
+        mapSetValue(forceInsertSpaceMap, forceInsertSpace[i], forceInsertSpace[i]);
     formatASTNode(ast->root, 0);
 }
