@@ -151,9 +151,9 @@ ASTNode* createASTNode(ASTNodeType type, char* name)
     return node;
 }
 
-ASTNode* topDownAnalyseInternal(ProductionGroup* group, TokenDoc* doc, int* idx);
+ASTNode* topDownAnalyseInternal(ProductionGroup* group, TokenDoc* doc, int* idx, int* maxIdx);
 
-ASTNode* topDownAnalyseProduction(ProductionGroup* group, const Production* production, TokenDoc* doc, int* idx)
+ASTNode* topDownAnalyseProduction(ProductionGroup* group, const Production* production, TokenDoc* doc, int* idx, int* maxIdx)
 {
     ASTNode* node = createASTNode(AST_NON_TERMINAL, group->name);
     node->production = group;
@@ -165,7 +165,7 @@ ASTNode* topDownAnalyseProduction(ProductionGroup* group, const Production* prod
             continue;
         if(term->type == NON_TERMINAL)
         {
-            ASTNode* nonTermNode = topDownAnalyseInternal(term->nonTerminal, doc, idx);
+            ASTNode* nonTermNode = topDownAnalyseInternal(term->nonTerminal, doc, idx, maxIdx);
             if(!nonTermNode)
                 goto Failed;
             if (nonTermNode->count > 0)
@@ -191,22 +191,27 @@ ASTNode* topDownAnalyseProduction(ProductionGroup* group, const Production* prod
     node->count = listToArray(list, (void***)&node->children);
     return node;
 Failed:
+    if(*idx>*maxIdx)
+        *maxIdx = *idx;
     return NULL;
 }
 
-ASTNode* topDownAnalyseInternal(ProductionGroup* group, TokenDoc* doc, int *idx)
+ASTNode* topDownAnalyseInternal(ProductionGroup* group, TokenDoc* doc, int* idx, int* maxIdx)
 {
     for (int i = 0; i < group->count;i++)
     {
         int currentIdx = *idx;
         Production* production = group->productions[i];
-        ASTNode* node = topDownAnalyseProduction(group, production, doc, &currentIdx);
+        ASTNode* node = topDownAnalyseProduction(group, production, doc, &currentIdx, maxIdx);
+        if(maxIdx)
         if(node)
         {
             *idx = currentIdx;
             return node;
         }
     }
+    if(*idx > *maxIdx)
+        *maxIdx = *idx;
     return NULL;
 }
 
@@ -215,6 +220,13 @@ SyntaxTree* topDownAnalyse(const SyntaxDef* syntax, char* source)
     SyntaxTree* tree = (SyntaxTree*)malloc(sizeof(SyntaxTree));
     TokenDoc* doc = getTokens(createDocument(source));
     int idx = 0;
-    tree->root = topDownAnalyseInternal(syntax->entry, doc, &idx);
+    int maxIdx = 0;
+    tree->root = topDownAnalyseInternal(syntax->entry, doc, &idx, &maxIdx);
+    if(idx!=doc->count)
+    {
+        printf("Syntax error: Unexpect token '%s' at line %d, column %d.", doc->tokens[maxIdx]->attribute,
+               doc->tokens[maxIdx]->line, doc->tokens[maxIdx]->column);
+        return NULL;
+    }
     return tree;
 }

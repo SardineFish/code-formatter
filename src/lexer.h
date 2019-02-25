@@ -8,6 +8,8 @@ typedef struct
     char* name;
     char* attribute;
     int position;
+    int line;
+    int column;
     Boolean eof;
 } Token;
 
@@ -15,12 +17,16 @@ typedef struct
 {
     char* text;
     int length;
+    int lineCount;
+    int* endlPos;
 } Document;
 
 typedef struct 
 {
     Document* doc;
     int pos;
+    int line;
+    int column;
     int length;
 } DocStream;
 
@@ -28,9 +34,16 @@ typedef struct
 {
     Token** tokens;
     int count;
-}TokenDoc;
+} TokenDoc;
 
-Token* createToken(char* name, char* attribute, int position);
+typedef struct
+{
+    int line;
+    int column;
+    int index;
+} DocPosition;
+
+Token* createToken(char* name, char* attribute, DocPosition pos);
 
 Document* createDocument(char* text);
 

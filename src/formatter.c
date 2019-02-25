@@ -27,7 +27,7 @@ inline void format(int indent, int count, ...)
     }
 }
 
-inline ASTNode* indent(int count)
+/*inline ASTNode* indent(int count)
 {
     char* indentText = (char*)calloc(count * INDENT_SPACE + 1, sizeof(char));
     memset(indentText, ' ', count * INDENT_SPACE);
@@ -41,7 +41,7 @@ inline ASTNode* inlineText(char* text)
     ASTNode* node = createASTNode(AST_TERMINAL, "indent");
     node->token = createToken("text", text, -1);
     return node;
-}
+}*/
 
 void printIndent(int count)
 {

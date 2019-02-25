@@ -88,6 +88,23 @@ describe("Testing RegExp", () =>
         await testRegExp(testCase, true);
     });
 
+    it("Char", async () => {
+        const testCase = {
+            regex: "'(\\\\(\\S|\\d+)|.)'",
+            regexJS: /^'(\\(\S|\d+)|.)'/,
+            samples: [
+                '"Hello World!\\n"',
+                "'a'",
+                "'0'",
+                "'\\0'",
+                "'\\n'",
+                "' '",
+                "''"
+            ]
+        };
+        await testRegExp(testCase, false);
+    });
+
     it("Strings", async () => {
         const testCase = {
             regex: '"([^\\"]|\\\\\\S|\\")*"',

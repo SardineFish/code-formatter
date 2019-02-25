@@ -49,6 +49,8 @@ void printASTNode(ASTNode* node, int indent)
 }
 void printAST(SyntaxTree* ast)
 {
+    if (!ast)
+        return;
     printASTNode(ast->root, 0);
 }
 
