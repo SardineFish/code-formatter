@@ -1,8 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "reg-exp.h"
 #include <errno.h>
 #include <time.h>
+
+extern "C"
+{
+    #include "reg-exp.h"
+    #include "syntax.h"
+    #include "lexer.h"
+    #include "formatter.h"
+}
 
 int main()
 {
@@ -19,7 +26,7 @@ int main()
     end = clock();
     printf("Compiled in %fms\n", (double)(end - start) / CLOCKS_PER_SEC / 1000.0);
     start = clock();
-    char* result = regExpMatch(regex, source, TRUE);
+    char* result = regExpMatch(regex, source, 1);
     end = clock();
     printf("Matched in %fms\n", (double)(end - start) / CLOCKS_PER_SEC / 1000.0);
     if(result)

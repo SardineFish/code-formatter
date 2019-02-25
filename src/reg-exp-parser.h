@@ -1,8 +1,10 @@
 #pragma once
 
+#ifndef __cplusplus
+typedef int RegExpNodeType;
+#endif
 typedef int RegExpNodeType;
 typedef int Boolean;
-typedef struct RegExpNodeType RegExpNode;
 
 #include "reg-exp.h"
 #include "data-struct.h"
@@ -24,7 +26,7 @@ enum
     FALSE = 0
 };
 
-struct RegExpNodeType
+struct RegExpNodeStruct
 {
     RegExpNodeType type;
     unsigned char chr;
@@ -33,9 +35,13 @@ struct RegExpNodeType
     Boolean optional;
     Boolean repeat;
     Boolean selectable;
-    RegExpNode* header;
-    RegExpNode* next;
+    struct RegExpNodeStruct* header;
+    struct RegExpNodeStruct* next;
 };
+
+#ifdef __cplusplus
+typedef RegExpNodeStruct RegExpNode;
+#endif
 
 RegExpNode* parse(const char* pattern, RegExpFlag flag);
 RegExp* compile(const RegExpNode* ast, RegExpFlag flag);

@@ -60,6 +60,9 @@ else
 	$(rm_unix) $(OUT_DIR)
 endif
 
+$(OBJ_DIR)/main.o: $(SRC_DIR)/main.cpp
+	$(CC) $(SRC_DIR)/main.cpp -o $(OBJ_DIR)/main.o -c --std=c++11 $(CFLAGS)
+
 build_all: $(OBJ_DIR)/main.o $(LIB_DIR)/libreg-exp.a
 	$(CC) $(OBJ_DIR)/main.o -L$(LIB_DIR) -lreg-exp -o $(OUT_DIR)/test $(CFLAGS)
 
