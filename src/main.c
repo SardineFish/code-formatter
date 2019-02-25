@@ -15,7 +15,7 @@ int main()
     printf("Source> ");
     scanf("%s", source);
     clock_t end, start = clock();
-    RegExp* regex = regExp(regexp);
+    RegExp* regex = regExp(regexp, REG_F_NONE);
     end = clock();
     printf("Compiled in %fms\n", (double)(end - start) / CLOCKS_PER_SEC / 1000.0);
     start = clock();

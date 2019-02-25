@@ -7,7 +7,6 @@
 #include <string.h>
 
 typedef ASTNode** FormatStruct;
-
 typedef struct
 {
     char* name;
@@ -15,7 +14,6 @@ typedef struct
 } ASTFormatDef;
 
 void formatASTNode(ASTNode* node, int indent);
-
 void formatAstNodeWithOutSpace(ASTNode* node, int indent);
 
 inline void format(int indent, int count, ...)

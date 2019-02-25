@@ -69,7 +69,7 @@ Token* readToken(DocStream* stream)
     RegExp* regSpace = regExp("\\s+", REG_F_GREEDY);
     RegExp* regID = regExp("[_A-Za-z][_A-Za-z0-9]*", REG_F_GREEDY);
     RegExp* regString = regExp("\"([^\\\"]|\\\\\\S)*\"", REG_F_NONE);
-    RegExp* regNumber = regExp("((\\d)+)((\\.((\\d)+))?)((e(\\+|-)?((\\d)+))?)", REG_F_GREEDY);
+    RegExp* regNumber = regExp("(0x[0-9A-Fa-f]+)|((\\d)+)((\\.((\\d)+))?)((e(\\+|-)?((\\d)+))?)", REG_F_GREEDY);
     RegExp* regOperator = regExp("(->)|(\\+\\+|--)|(\\|\\||&&)|((\\+|-|\\*|/|%|=|&|\\||\\^|<<|>>|<|>|=|!)=?)|(\\?|:|,|\\.|;)",REG_F_GREEDY);
     RegExp* regComment = regExp("//.*\n|/\\*.*\\*/", REG_F_MULTILINE);
     RegExp* regKeywords = regExp("#include|#define|void|char|short|int|long|unsigned|double|float|if|else if|else|for|while|do|break|continue|return|switch|case|default", REG_F_GREEDY);
@@ -142,7 +142,22 @@ NextToken:
     // Get number
     if (regExpMatchNonAlloc(regNumber, subStr(stream->doc, idx), TRUE, matchResult) && strlen(matchResult) > 0)
     {
-        stream->pos = idx + strlen(matchResult);
+        int len = strlen(matchResult);
+        stream->pos = idx + len;
+        if(stream->doc->text[stream->pos]=='F'||stream->doc->text[stream->pos]=='f')
+        {
+            matchResult[len] = 'f';
+            matchResult[len + 1] = '\0';
+            stream->pos++;
+            return createToken("number-float", strClone(matchResult), idx);
+        }
+        if (stream->doc->text[stream->pos] == 'L' || stream->doc->text[stream->pos] == 'l')
+        {
+            matchResult[len] = 'L';
+            matchResult[len + 1] = '\0';
+            stream->pos++;
+            return createToken("number-long", strClone(matchResult), idx);
+        }
         return createToken("number", strClone(matchResult), idx);
     }
 

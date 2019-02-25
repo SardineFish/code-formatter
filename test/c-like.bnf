@@ -32,7 +32,8 @@
 <switch-default> ::= 'default' ':' <body>
 <block-body> ::= '{' <body> '}' | <statement>
 <block> ::= '{' <body> '}'
-<const> ::= 'number' | 'string' | 'char'
+<const> ::= <number> | 'string' | 'char'
+<number> ::= 'number' | 'number-long' | 'number-float'
 <expr> ::= <assign>
 <assign> ::= <logic-term> <assign-1>
 <assign-op> ::= '=' | '+=' | '-=' | '*=' | '/=' | '%' | '<<=' | '>>=' | '&=' | '^='
@@ -42,7 +43,7 @@
 <compare-op> ::= '>' | '<' | '>=' | '<=' | '==' | '!='
 <plus-term> ::= <term> <plus-term-1>
 <term> ::= <factor> <term-1>
-<factor> ::= 'number' | 'string' | <prefix-obj>
+<factor> ::= <const> | <prefix-obj>
 <prefix-obj> ::= <prefix> <prefix-obj> | <postfix-obj>
 <postfix-obj> ::= <obj> <postfix-obj-1>
 <obj> ::= <func-call> | 'id' | '(' <expr> ')'

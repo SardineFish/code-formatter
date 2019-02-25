@@ -25,6 +25,8 @@
 
 // Global variable
 int a = 0,b=5;
+long l = 0x8000000L;
+float f = 0.00f;
 
 void foo (char *x, int y)
 {
