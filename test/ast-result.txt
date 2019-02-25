@@ -159,7 +159,29 @@
                                             <prefix-obj>
                                               <postfix-obj>
                                                 <obj>
-                                                  "y"
+                                                  "x"
+                                                <postfix-obj-1>
+                                                  <postfix>
+                                                    "["
+                                                    <expr>
+                                                      <assign>
+                                                        <logic-term>
+                                                          <cpr-term>
+                                                            <plus-term>
+                                                              <term>
+                                                                <factor>
+                                                                  <prefix-obj>
+                                                                    <postfix-obj>
+                                                                      <obj>
+                                                                        "y"
+                                                              <plus-term-1>
+                                                                "+"
+                                                                <term>
+                                                                  <factor>
+                                                                    <const>
+                                                                      <number>
+                                                                        "5"
+                                                    "]"
                           ";"
                         <body-1>
                           <body>
