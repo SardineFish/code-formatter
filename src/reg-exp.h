@@ -1,6 +1,5 @@
 #pragma once
 
-
 typedef int RegExpFlag;
 enum
 {

@@ -63,8 +63,8 @@ endif
 $(OBJ_DIR)/main.o: $(SRC_DIR)/main.cpp
 	$(CC) $(SRC_DIR)/main.cpp -o $(OBJ_DIR)/main.o -c --std=c++11 $(CFLAGS)
 
-build_all: $(OBJ_DIR)/main.o $(LIB_DIR)/libreg-exp.a
-	$(CC) $(OBJ_DIR)/main.o -L$(LIB_DIR) -lreg-exp -o $(OUT_DIR)/test $(CFLAGS)
+build_all: $(OBJ_DIR)/main.o $(OBJ_DIR)/lexer.o $(OBJ_DIR)/syntax.o $(OBJ_DIR)/formatter.o $(LIB_DIR)/libreg-exp.a
+	g++ $(OBJ_DIR)/main.o $(OBJ_DIR)/lexer.o $(OBJ_DIR)/syntax.o $(OBJ_DIR)/formatter.o -L$(LIB_DIR) -lreg-exp -o $(OUT_DIR)/test $(CFLAGS)
 
 regexp_test: $(LIB_DIR)/libreg-exp.a $(OBJ_TEST)/test-regex.o
 	$(CC) $(OBJ_TEST)/test-regex.o -L$(LIB_DIR) -lreg-exp -o $(TEST_OUT)/test-regexp $(CFLAGS)

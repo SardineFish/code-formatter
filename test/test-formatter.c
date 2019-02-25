@@ -16,6 +16,7 @@ char* readFile(char* path)
 
 int main()
 {
+    
     char* bnf = readFile("./test/c-like.bnf");
     char* code = readFile("./test/code-test.c");
     char formattedBuffer[8192];

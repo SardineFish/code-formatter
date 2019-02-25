@@ -1,7 +1,7 @@
 #pragma once
 
 #ifndef __cplusplus
-typedef int RegExpNodeType;
+typedef struct RegExpNodeStruct RegExpNode;
 #endif
 typedef int RegExpNodeType;
 typedef int Boolean;

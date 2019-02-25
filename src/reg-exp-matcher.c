@@ -1,9 +1,15 @@
-#include "reg-exp-matcher.h"
 #include "reg-exp.h"
 #include <stdlib.h>
 #include <string.h>
 
 typedef char byte;
+#define EMPTY_CHAR '\0'
+
+enum
+{
+    TRUE = 1,
+    FALSE = 0
+};
 
 void emptyClosure(RegExpNFANode* node, ArrayList* set, byte* stateExist, int stateCount)
 {

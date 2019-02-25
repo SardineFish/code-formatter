@@ -32,7 +32,12 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/test",
-            "args": [],
+            "args": [
+                "syntax",
+                "./test/code-test.c",
+                "--bnf",
+                "./test/c-like.bnf"
+            ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

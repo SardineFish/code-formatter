@@ -6,6 +6,7 @@
         "reg-exp-parser.h": "c",
         "link-list.h": "c",
         "syntax.h": "c",
-        "formatter.h": "c"
+        "formatter.h": "c",
+        "ostream": "cpp"
     }
 }

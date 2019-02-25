@@ -8,6 +8,12 @@
 
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 
+enum
+{
+    TRUE = 1,
+    FALSE = 0
+};
+
 Token* createToken(char* name, char* attribute, int position)
 {
     Token* token = (Token*)malloc(sizeof(Token));
