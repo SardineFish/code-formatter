@@ -53,11 +53,13 @@ ifeq ($(OS),Windows_NT)
 	$(rm_win) $(OBJ_DIR)
 	$(rm_win) $(LIB_DIR)
 	$(rm_win) $(OUT_DIR)
+	$(rm_win) "$(TEST_OUT)"
 
 else
 	$(rm_unix) $(OBJ_DIR)
 	$(rm_unix) $(LIB_DIR)
 	$(rm_unix) $(OUT_DIR)
+	$(rm_unix) $(TEST_OUT)
 endif
 
 $(OBJ_DIR)/main.o: $(SRC_DIR)/main.cpp
@@ -94,6 +96,9 @@ all: build_dir build_all
 
 debug: 
 	make build_all CFLAGS=-g
+
+test-lexer:
+	./build/test lexer ./test/code-test.c
 
 $(LIB_DIR)/libreg-exp.a: $(SHARE_OBJ)/reg-exp-parser.o $(SHARE_OBJ)/reg-exp-compiler.o $(SHARE_OBJ)/reg-exp-matcher.o $(SHARE_OBJ)/reg-exp.o $(SHARE_OBJ)/error.o $(SHARE_OBJ)/data-struct.o
 	ar rcs $@ $^
