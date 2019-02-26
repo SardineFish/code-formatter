@@ -190,6 +190,7 @@ char* spaceRightTokens[] = {
     ";",
     "case",
     "unsigned",
+    "#include"
 };
 char* forceInsertSpace[] = {"expr"};
 

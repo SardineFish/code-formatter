@@ -95,7 +95,9 @@ char* toStr(char chr)
 
 Token* readToken(DocStream* stream)
 {
+    RegExp* regInclude = regExp("#include", REG_F_GREEDY);
     RegExp* regSpace = regExp("\\s+", REG_F_GREEDY);
+    RegExp* regIncludePath = regExp("<.*>", REG_F_GREEDY);
     RegExp* regID = regExp("[_A-Za-z][_A-Za-z0-9]*", REG_F_GREEDY);
     RegExp* regString = regExp("\"([^\\\"]|\\\\\\S)*\"", REG_F_NONE);
     RegExp* regChar = regExp("'(\\\\(\\S|\\d+)|.)'", REG_F_GREEDY);
@@ -103,7 +105,7 @@ Token* readToken(DocStream* stream)
     RegExp* regOperator = regExp("(->)|(\\+\\+|--)|(\\|\\||&&)|((\\+|-|\\*|/|%|=|&|\\||\\^|<<|>>|<|>|=|!)=?)|(\\?|:|,|\\.|;)",REG_F_GREEDY);
     RegExp* regComment = regExp("//.*\n|/\\*.*\\*/", REG_F_MULTILINE);
     RegExp* regKeywords = regExp("#include|#define|void|char|short|int|long|unsigned|double|float|if|else if|else|for|while|do|break|continue|return|switch|case|default", REG_F_GREEDY);
-    char brackets[] = "()[]{}";
+    char brackets[] = "()[]{}<>";
     char matchResult[MAX_STR_LENGTH];
 
     // Skip white spaces & comments
@@ -146,6 +148,20 @@ NextToken:
         case '}':
             stream->pos = idx + 1;
             return createToken(toStr(stream->doc->text[idx]), toStr(stream->doc->text[idx]), getDocPos(stream->doc, idx));
+    }
+
+    // Get include
+    if (regExpMatchNonAlloc(regInclude, subStr(stream->doc, idx), TRUE, matchResult) && strlen(matchResult) > 0)
+    {
+        stream->pos = idx + strlen(matchResult);
+        return createToken("include", strClone(matchResult), getDocPos(stream->doc, idx));
+    }
+
+    // Get include path
+    if (regExpMatchNonAlloc(regIncludePath, subStr(stream->doc, idx), TRUE, matchResult) && strlen(matchResult) > 0)
+    {
+        stream->pos = idx + strlen(matchResult);
+        return createToken("include-path", strClone(matchResult), getDocPos(stream->doc, idx));
     }
 
     // Get key words

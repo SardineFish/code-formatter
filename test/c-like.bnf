@@ -1,6 +1,8 @@
 <syntax> ::= <extern-statement-sequence>
 <extern-statement-sequence> ::= <extern-statement> <extern-statement-sequence-1> | ""
-<extern-statement> ::= <var-def> ';' | <function-def>
+<extern-statement> ::= <include> | <var-def> ';' | <function-def>
+<include> ::= 'include' <include-path>
+<include-path> ::= 'include-path' | 'string'
 <var-def> ::= <signed-type> <var-list>
 <var-list> ::= <name> <var-init> <var-list-1>
 <name> ::= 'id'
